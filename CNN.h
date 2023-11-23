@@ -1,5 +1,7 @@
 #include <vector>
 #include <cmath>
+#include <random>
+#include <time.h>
 
 using namespace std;
 
@@ -23,6 +25,30 @@ private:
 	vector<int> sizeOfKernels = { 5, 5 };
 
 	vector<int> sizeOfLayers = { 100, 80 };
+
+
+
+
+
+
+//***************************************** States *********************************
+
+	vector<vector<vector<vector<vector<double>>>>> convWeights;
+
+	vector<vector<double>> convBiases;
+
+	vector<vector<vector<double>>> fullWeights;
+
+	vector<vector<double>> fullBiases;
+
+	vector<vector<double>> outputWeights;
+
+	vector<double> outputBiases;
+
+	
+
+
+
 
 
 //***************************************** Activation functions *******************

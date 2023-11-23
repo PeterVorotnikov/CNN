@@ -87,8 +87,3 @@ vector<double> CNN::softmaxOutputs(vector<double> softmaxInputs, int nOfClass) {
 
 	return answer;
 }
-
-
-double outputDiffTrueClass(vector<double> softMaxInputs, int nOfClass, int nOfTrueClass) {
-
-}
