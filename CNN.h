@@ -27,6 +27,11 @@ private:
 	vector<int> sizeOfLayers = { 100, 80 };
 
 
+	int imageWidth = 28;
+
+	int imageHeight = 28;
+
+
 
 
 
@@ -65,5 +70,22 @@ private:
 
 
 	vector<double> softmaxOutputs(vector<double> softmaxInputs, int nOfClass);
+
+
+
+
+
+
+
+
+
+
+public:
+
+//*********************************** Constructors *******************************
+
+	void init();
+
+
 };
 
