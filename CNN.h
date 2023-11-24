@@ -8,7 +8,7 @@ using namespace std;
 #pragma once
 class CNN
 {
-private:
+public:
 
 //***************************************** Parameters *****************************
 
@@ -84,7 +84,9 @@ public:
 
 //*********************************** Constructors *******************************
 
-	void init();
+	void weightsInit();
+
+	CNN();
 
 
 };

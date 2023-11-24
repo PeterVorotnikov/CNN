@@ -100,7 +100,7 @@ vector<double> CNN::softmaxOutputs(vector<double> softmaxInputs, int nOfClass) {
 
 //*********************************** Constructors *******************************
 
-void CNN::init() {
+void CNN::weightsInit() {
 
 	convWeights.resize(nOfConvLayers);
 
@@ -126,7 +126,7 @@ void CNN::init() {
 
 			}
 
-			for (int k = 0; k < (convLayer == 0) ? 1 : nOfFilters[convLayer] - 1; k++) {
+			for (int k = 0; k < ((convLayer == 0) ? 1 : nOfFilters[convLayer - 1]); k++) {
 
 				convWeights[convLayer][filter][k].resize(sizeOfKernels[convLayer]);
 
@@ -159,16 +159,87 @@ void CNN::init() {
 
 	fullWeights.resize(nOfFullLayers);
 
+	fullBiases.resize(nOfFullLayers);
+
 	for (int fullLayer = 0; fullLayer < nOfFullLayers; fullLayer++) {
+
+		int nOfOutputSignals;
 
 		if (fullLayer == 0) {
 
-			int nOfInputValues = (imageWidth / pow(sizeOfPulling, nOfConvLayers)) *
-				(imageHeight / pow(sizeOfPulling, nOfConvLayers)) * convWeights.back().size();
+			nOfOutputSignals = (imageWidth / pow(sizeOfPulling, nOfConvLayers)) *
+				(imageHeight / pow(sizeOfPulling, nOfConvLayers)) * 
+				convWeights.back().size();
+
+		}
+
+		else {
+
+			nOfOutputSignals = sizeOfLayers[fullLayer - 1];
+
+		}
+
+		fullWeights[fullLayer].resize(nOfOutputSignals);
+
+		fullBiases[fullLayer].resize(sizeOfLayers[fullLayer]);
+
+		for (int nOfOutput = 0; nOfOutput < nOfOutputSignals; nOfOutput++) {
+
+			fullWeights[fullLayer][nOfOutput].resize(sizeOfLayers[fullLayer]);
+
+			for (int nOfInput = 0; nOfInput < sizeOfLayers[fullLayer]; nOfInput++) {
+
+				int r = rand();
+
+				double value = (double)r / (double)RAND_MAX - 0.5;
+
+				fullWeights[fullLayer][nOfOutput][nOfInput] = value;
+
+				fullBiases[fullLayer][nOfInput] = 0;
+
+			}
 
 		}
 
 	}
 
+
+
+
+
+	outputWeights.resize(sizeOfLayers.back());
+
+	outputBiases.resize(nOfClasses);
+
+	for (int nOfOutput = 0; nOfOutput < sizeOfLayers.back(); nOfOutput++) {
+
+		outputWeights[nOfOutput].resize(nOfClasses);
+
+		for (int nOfInput = 0; nOfInput < nOfClasses; nOfInput++) {
+
+			int r = rand();
+
+			double value = (double)r / (double)RAND_MAX - 0.5;
+
+			outputWeights[nOfOutput][nOfInput] = value;
+
+			outputBiases[nOfInput] = 0;
+
+		}
+
+	}
+
+
+}
+
+
+
+
+
+
+
+CNN::CNN() {
+
+	weightsInit();
 
 }
