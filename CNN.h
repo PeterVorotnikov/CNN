@@ -8,7 +8,7 @@ using namespace std;
 #pragma once
 class CNN
 {
-public:
+private:
 
 //***************************************** Parameters *****************************
 
@@ -32,6 +32,8 @@ public:
 	int imageHeight = 28;
 
 
+	vector<vector<vector<vector<int>>>> poolingMemory;
+
 
 
 
@@ -49,6 +51,9 @@ public:
 	vector<vector<double>> outputWeights;
 
 	vector<double> outputBiases;
+
+
+	
 
 	
 
@@ -85,6 +90,10 @@ public:
 //*********************************** Constructors *******************************
 
 	void weightsInit();
+
+	void poolingMemoryInit();
+
+	void init();
 
 	CNN();
 

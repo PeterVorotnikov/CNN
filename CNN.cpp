@@ -238,8 +238,64 @@ void CNN::weightsInit() {
 
 
 
-CNN::CNN() {
+
+
+
+void CNN::poolingMemoryInit() {
+
+	poolingMemory.resize(nOfConvLayers);
+
+	for (int convLayer = 0; convLayer < nOfConvLayers; convLayer++) {
+
+		int nOfMaps = nOfFilters[convLayer];
+
+		poolingMemory[convLayer].resize(nOfMaps);
+
+		for (int map = 0; map < nOfMaps; map++) {
+
+			int mapWidth = imageWidth / pow(2, convLayer + 1);
+
+			int mapHeight = imageHeight / pow(2, convLayer + 1);
+
+			poolingMemory[convLayer][map].resize(mapWidth);
+
+			for (int x = 0; x < mapWidth; x++) {
+
+				poolingMemory[convLayer][map][x].resize(mapHeight);
+
+				for (int y = 0; y < mapHeight; y++) {
+
+					poolingMemory[convLayer][map][x][y] = 0;
+
+				}
+
+			}
+
+		}
+
+	}
+
+}
+
+
+
+
+void CNN::init() {
 
 	weightsInit();
+
+	poolingMemoryInit();
+
+}
+
+
+
+
+
+
+
+CNN::CNN() {
+
+	init();
 
 }
