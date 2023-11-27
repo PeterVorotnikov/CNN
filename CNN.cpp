@@ -253,9 +253,9 @@ void CNN::poolingMemoryInit() {
 
 		for (int map = 0; map < nOfMaps; map++) {
 
-			int mapWidth = imageWidth / pow(2, convLayer + 1);
+			int mapWidth = imageWidth / pow(sizeOfPulling, convLayer + 1);
 
-			int mapHeight = imageHeight / pow(2, convLayer + 1);
+			int mapHeight = imageHeight / pow(sizeOfPulling, convLayer + 1);
 
 			poolingMemory[convLayer][map].resize(mapHeight);
 
@@ -290,6 +290,34 @@ void CNN::directStatesInit() {
 
 	}
 
+
+
+	convLayersOutputs.resize(nOfConvLayers);
+
+	for (int convLayer = 0; convLayer < nOfConvLayers; convLayer++) {
+
+		convLayersOutputs[convLayer].resize(nOfFilters[convLayer]);
+
+		for (int map = 0; map < nOfFilters[convLayer]; map++) {
+
+			int mapHeight = imageHeight / pow(sizeOfPulling, convLayer);
+
+			int mapWidth = imageWidth / pow(sizeOfPulling, convLayer);
+
+			convLayersOutputs[convLayer][map].resize(mapHeight);
+
+			for (int row = 0; row < mapHeight; row++) {
+
+				convLayersOutputs[convLayer][map][row].resize(mapWidth);
+
+			}
+
+		}
+
+	}
+
+	
+
 }
 
 
@@ -317,6 +345,8 @@ void CNN::init() {
 	weightsInit();
 
 	poolingMemoryInit();
+
+	directStatesInit();
 
 }
 
