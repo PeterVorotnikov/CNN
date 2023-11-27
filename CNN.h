@@ -32,13 +32,13 @@ private:
 	int imageHeight = 28;
 
 
-	vector<vector<vector<vector<int>>>> poolingMemory;
+	
 
 
 
 
 
-//***************************************** States *********************************
+//***************************************** HyperParameters *********************************
 
 	vector<vector<vector<vector<vector<double>>>>> convWeights;
 
@@ -53,15 +53,56 @@ private:
 	vector<double> outputBiases;
 
 
+
+
+
+//************************************ Direct propagation states ********************************
+
+
+	vector<vector<double>> initialImage;
+
+	vector<vector<vector<vector<double>>>> convLayersOutputs;
+
+	vector<vector<vector<vector<double>>>> poolingLayersOutputs;
+
+	vector<vector<double>> fullLayersOutputs;
+
+	vector<double> outputs;
 	
+
+	vector<vector<vector<vector<int>>>> poolingMemory;
 
 	
 
+
+
+//************************************ Back propagation states **********************
+
+
+	vector<vector<vector<vector<double>>>> convNeuronsDiff;
+
+	vector<vector<vector<vector<vector<double>>>>> convWeightsDiff;
+
+	vector<vector<double>> convBiasesDiff;
+
+	vector<vector<double>> fullNeuronsDiff;
+
+	vector<vector<vector<double>>> fullWeightsDiff;
+
+	vector<vector<double>> fullBiasesDiff;
+
+	vector<double> outputNeuronsDiff;
+
+	vector<vector<double>> outputWeightsDiff;
+
+	vector<double> outputBiasesDiff;
 
 
 
 
 //***************************************** Activation functions *******************
+
+
 	double convActivation(double x);
 
 	double convActivationDiff(double x);
@@ -92,6 +133,10 @@ public:
 	void weightsInit();
 
 	void poolingMemoryInit();
+
+	void directStatesInit();
+
+	void backStatesInit();
 
 	void init();
 
