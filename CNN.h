@@ -94,7 +94,7 @@ private:
 
 	vector<vector<vector<vector<double>>>> convLayersOutputs;
 
-	vector<vector<vector<vector<double>>>> convNeuronsDiff;
+	vector<vector<vector<vector<double>>>> convLayersDiff;
 
 
 
