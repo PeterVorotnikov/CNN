@@ -167,8 +167,8 @@ void CNN::weightsInit() {
 
 		if (fullLayer == 0) {
 
-			nOfOutputSignals = (imageWidth / pow(sizeOfPulling, nOfConvLayers)) *
-				(imageHeight / pow(sizeOfPulling, nOfConvLayers)) * 
+			nOfOutputSignals = (imageWidth / pow(sizeOfPooling, nOfConvLayers)) *
+				(imageHeight / pow(sizeOfPooling, nOfConvLayers)) * 
 				convWeights.back().size();
 
 		}
@@ -253,9 +253,9 @@ void CNN::poolingMemoryInit() {
 
 		for (int map = 0; map < nOfMaps; map++) {
 
-			int mapWidth = imageWidth / pow(sizeOfPulling, convLayer + 1);
+			int mapWidth = imageWidth / pow(sizeOfPooling, convLayer + 1);
 
-			int mapHeight = imageHeight / pow(sizeOfPulling, convLayer + 1);
+			int mapHeight = imageHeight / pow(sizeOfPooling, convLayer + 1);
 
 			poolingMemory[convLayer][map].resize(mapHeight);
 
@@ -280,7 +280,7 @@ void CNN::poolingMemoryInit() {
 
 
 
-void CNN::directStatesInit() {
+void CNN::statesInit() {
 
 	initialImage.resize(imageHeight);
 
@@ -300,9 +300,9 @@ void CNN::directStatesInit() {
 
 		for (int map = 0; map < nOfFilters[convLayer]; map++) {
 
-			int mapHeight = imageHeight / pow(sizeOfPulling, convLayer);
+			int mapHeight = imageHeight / pow(sizeOfPooling, convLayer);
 
-			int mapWidth = imageWidth / pow(sizeOfPulling, convLayer);
+			int mapWidth = imageWidth / pow(sizeOfPooling, convLayer);
 
 			convLayersOutputs[convLayer][map].resize(mapHeight);
 
@@ -313,6 +313,44 @@ void CNN::directStatesInit() {
 			}
 
 		}
+
+	}
+
+
+
+
+	poolingLayersOutputs.resize(nOfConvLayers);
+
+	for (int convLayer = 0; convLayer < nOfConvLayers; convLayer++) {
+
+		poolingLayersOutputs[convLayer].resize(nOfFilters[convLayer]);
+
+		for (int map = 0; map < nOfFilters[convLayer]; map++) {
+
+			int mapHeight = imageHeight / pow(sizeOfPooling, convLayer + 1);
+
+			int mapWidth = imageWidth / pow(sizeOfPooling, convLayer + 1);
+
+			poolingLayersOutputs[convLayer][map].resize(mapHeight);
+
+			for (int row = 0; row < mapHeight; row++) {
+
+				poolingLayersOutputs[convLayer][map][row].resize(mapWidth);
+
+			}
+
+		}
+
+	}
+
+
+
+
+	fullLayersOutputs.resize(nOfFullLayers);
+
+	for (int fullLayer = 0; fullLayer < nOfFullLayers; fullLayer++) {
+
+		fullLayersOutputs[fullLayer].resize(sizeOfLayers[fullLayer]);
 
 	}
 
@@ -328,13 +366,6 @@ void CNN::directStatesInit() {
 
 
 
-void CNN::backStatesInit() {
-
-
-
-}
-
-
 
 
 
@@ -346,7 +377,7 @@ void CNN::init() {
 
 	poolingMemoryInit();
 
-	directStatesInit();
+	statesInit();
 
 }
 

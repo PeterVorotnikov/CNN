@@ -18,7 +18,7 @@ private:
 
 	int nOfFullLayers = 2;
 
-	int sizeOfPulling = 2;
+	int sizeOfPooling = 2;
 
 	vector<int> nOfFilters = { 6, 16 };
 
@@ -40,62 +40,95 @@ private:
 
 //***************************************** HyperParameters *********************************
 
+	// Conv layers
+
 	vector<vector<vector<vector<vector<double>>>>> convWeights;
+
+	vector<vector<vector<vector<vector<double>>>>> convWeightsDiff;
 
 	vector<vector<double>> convBiases;
 
+	vector<vector<double>> convBiasesDiff;
+
+
+
+	// Full layers
+
 	vector<vector<vector<double>>> fullWeights;
 
+	vector<vector<vector<double>>> fullWeightsDiff;
+
 	vector<vector<double>> fullBiases;
+
+	vector<vector<double>> fullBiasesDiff;
+
+
+
+
+	// Output layers
 
 	vector<vector<double>> outputWeights;
 
 	vector<double> outputBiases;
 
-
-
-
-
-//************************************ Direct propagation states ********************************
-
-
-	vector<vector<double>> initialImage;
-
-	vector<vector<vector<vector<double>>>> convLayersOutputs;
-
-	vector<vector<vector<vector<double>>>> poolingLayersOutputs;
-
-	vector<vector<double>> fullLayersOutputs;
-
-	vector<double> outputs;
-	
-
-	vector<vector<vector<vector<int>>>> poolingMemory;
-
-	
-
-
-
-//************************************ Back propagation states **********************
-
-
-	vector<vector<vector<vector<double>>>> convNeuronsDiff;
-
-	vector<vector<vector<vector<vector<double>>>>> convWeightsDiff;
-
-	vector<vector<double>> convBiasesDiff;
-
-	vector<vector<double>> fullNeuronsDiff;
-
-	vector<vector<vector<double>>> fullWeightsDiff;
-
-	vector<vector<double>> fullBiasesDiff;
-
-	vector<double> outputNeuronsDiff;
-
 	vector<vector<double>> outputWeightsDiff;
 
 	vector<double> outputBiasesDiff;
+
+
+
+
+
+
+//************************************ States ********************************
+
+	// Input image
+
+	vector<vector<double>> initialImage;
+
+
+
+	// Conv layers
+
+	vector<vector<vector<vector<double>>>> convLayersInputs;
+
+	vector<vector<vector<vector<double>>>> convLayersOutputs;
+
+	vector<vector<vector<vector<double>>>> convNeuronsDiff;
+
+
+
+	// Pooling layers
+
+	vector<vector<vector<vector<double>>>> poolingLayersInputs;
+
+	vector<vector<vector<vector<double>>>> poolingLayersOutputs;
+
+	vector<vector<vector<vector<int>>>> poolingMemory;
+
+
+
+	// Full layers
+
+	vector<vector<double>> fullLayersInputs;
+
+	vector<vector<double>> fullLayersOutputs;
+
+	vector<vector<double>> fullNeuronsDiff;
+
+
+
+	// Output layer
+
+	vector<double> outputInputs;
+
+	vector<double> outputOutputs;
+
+	vector<double> outputDiff;
+
+	
+
+	
 
 
 
@@ -134,9 +167,7 @@ public:
 
 	void poolingMemoryInit();
 
-	void directStatesInit();
-
-	void backStatesInit();
+	void statesInit();
 
 	void init();
 
