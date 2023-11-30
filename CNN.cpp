@@ -100,17 +100,25 @@ vector<double> CNN::softmaxOutputs(vector<double> softmaxInputs, int nOfClass) {
 
 //*********************************** Constructors *******************************
 
-void CNN::weightsInit() {
+void CNN::parametersInit() {
 
 	convWeights.resize(nOfConvLayers);
 
+	convWeightsDiff.resize(nOfConvLayers);
+
 	convBiases.resize(nOfConvLayers);
+
+	convBiasesDiff.resize(nOfConvLayers);
 
 	for (int convLayer = 0; convLayer < nOfConvLayers; convLayer++) {
 
 		convWeights[convLayer].resize(nOfFilters[convLayer]);
 
+		convWeightsDiff[convLayer].resize(nOfFilters[convLayer]);
+
 		convBiases[convLayer].resize(nOfFilters[convLayer]);
+
+		convBiasesDiff[convLayer].resize(nOfFilters[convLayer]);
 
 		for (int filter = 0; filter < nOfFilters[convLayer]; filter++) {
 
@@ -118,11 +126,15 @@ void CNN::weightsInit() {
 
 				convWeights[convLayer][filter].resize(1);
 
+				convWeightsDiff[convLayer][filter].resize(1);
+
 			}
 
 			else {
 
 				convWeights[convLayer][filter].resize(nOfFilters[convLayer - 1]);
+
+				convWeightsDiff[convLayer][filter].resize(nOfFilters[convLayer - 1]);
 
 			}
 
@@ -130,9 +142,13 @@ void CNN::weightsInit() {
 
 				convWeights[convLayer][filter][k].resize(sizeOfKernels[convLayer]);
 
+				convWeightsDiff[convLayer][filter][k].resize(sizeOfKernels[convLayer]);
+
 				for (int i = 0; i < sizeOfKernels[convLayer]; i++) {
 
-					convWeights[convLayer][filter][k][i].resize(sizeOfKernels[convLayer]);;
+					convWeights[convLayer][filter][k][i].resize(sizeOfKernels[convLayer]);
+
+					convWeightsDiff[convLayer][filter][k][i].resize(sizeOfKernels[convLayer]);
 
 					for (int j = 0; j < sizeOfKernels[convLayer]; j++) {
 
@@ -149,6 +165,8 @@ void CNN::weightsInit() {
 			}
 
 			convBiases[convLayer][filter] = 0;
+
+			convBiasesDiff[convLayer][filter] = 0;
 
 		}
 
@@ -373,7 +391,7 @@ void CNN::statesInit() {
 
 void CNN::init() {
 
-	weightsInit();
+	parametersInit();
 
 	poolingMemoryInit();
 
