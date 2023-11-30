@@ -242,11 +242,17 @@ void CNN::parametersInit() {
 
 	outputWeights.resize(sizeOfLayers.back());
 
+	outputWeightsDiff.resize(sizeOfLayers.back());
+
 	outputBiases.resize(nOfClasses);
+
+	outputBiasesDiff.resize(nOfClasses);
 
 	for (int nOfOutput = 0; nOfOutput < sizeOfLayers.back(); nOfOutput++) {
 
 		outputWeights[nOfOutput].resize(nOfClasses);
+
+		outputWeightsDiff[nOfOutput].resize(nOfClasses);
 
 		for (int nOfInput = 0; nOfInput < nOfClasses; nOfInput++) {
 
