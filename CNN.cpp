@@ -102,6 +102,8 @@ vector<double> CNN::softmaxOutputs(vector<double> softmaxInputs, int nOfClass) {
 
 void CNN::parametersInit() {
 
+	// Conv layers
+
 	convWeights.resize(nOfConvLayers);
 
 	convWeightsDiff.resize(nOfConvLayers);
@@ -175,17 +177,24 @@ void CNN::parametersInit() {
 
 
 
+
+	// Full layers
+
 	fullWeights.resize(nOfFullLayers);
+
+	fullWeightsDiff.resize(nOfFullLayers);
 
 	fullBiases.resize(nOfFullLayers);
 
+	fullBiasesDiff.resize(nOfFullLayers);
+
 	for (int fullLayer = 0; fullLayer < nOfFullLayers; fullLayer++) {
 
-		int nOfOutputSignals;
+		int nOfPrevLayerOutputSignals;
 
 		if (fullLayer == 0) {
 
-			nOfOutputSignals = (imageWidth / pow(sizeOfPooling, nOfConvLayers)) *
+			nOfPrevLayerOutputSignals = (imageWidth / pow(sizeOfPooling, nOfConvLayers)) *
 				(imageHeight / pow(sizeOfPooling, nOfConvLayers)) * 
 				convWeights.back().size();
 
@@ -193,17 +202,23 @@ void CNN::parametersInit() {
 
 		else {
 
-			nOfOutputSignals = sizeOfLayers[fullLayer - 1];
+			nOfPrevLayerOutputSignals = sizeOfLayers[fullLayer - 1];
 
 		}
 
-		fullWeights[fullLayer].resize(nOfOutputSignals);
+		fullWeights[fullLayer].resize(nOfPrevLayerOutputSignals);
+
+		fullWeightsDiff[fullLayer].resize(nOfPrevLayerOutputSignals);
 
 		fullBiases[fullLayer].resize(sizeOfLayers[fullLayer]);
 
-		for (int nOfOutput = 0; nOfOutput < nOfOutputSignals; nOfOutput++) {
+		fullBiasesDiff[fullLayer].resize(sizeOfLayers[fullLayer]);
+
+		for (int nOfOutput = 0; nOfOutput < nOfPrevLayerOutputSignals; nOfOutput++) {
 
 			fullWeights[fullLayer][nOfOutput].resize(sizeOfLayers[fullLayer]);
+
+			fullWeightsDiff[fullLayer][nOfOutput].resize(sizeOfLayers[fullLayer]);
 
 			for (int nOfInput = 0; nOfInput < sizeOfLayers[fullLayer]; nOfInput++) {
 
