@@ -425,6 +425,16 @@ void CNN::statesInit() {
 
 	}
 
+
+
+	// Output layers
+
+	outputInputs.resize(nOfClasses);
+
+	outputOutputs.resize(nOfClasses);
+
+	outputDiff.resize(nOfClasses);
+
 	
 
 }
