@@ -112,7 +112,7 @@ private:
 
 	vector<vector<double>> fullLayersOutputs;
 
-	vector<vector<double>> fullNeuronsDiff;
+	vector<vector<double>> fullLayersDiff;
 
 
 

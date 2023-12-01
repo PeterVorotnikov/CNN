@@ -406,11 +406,22 @@ void CNN::statesInit() {
 
 
 
+
+	// Full layers
+
+	fullLayersInputs.resize(nOfFullLayers);
+
 	fullLayersOutputs.resize(nOfFullLayers);
+
+	fullLayersDiff.resize(nOfFullLayers);
 
 	for (int fullLayer = 0; fullLayer < nOfFullLayers; fullLayer++) {
 
+		fullLayersInputs[fullLayer].resize(sizeOfLayers[fullLayer]);
+
 		fullLayersOutputs[fullLayer].resize(sizeOfLayers[fullLayer]);
+
+		fullLayersDiff[fullLayer].resize(sizeOfLayers[fullLayer]);
 
 	}
 
