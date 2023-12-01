@@ -31,6 +31,8 @@ private:
 
 	int imageHeight = 28;
 
+	int nOfImageChannels = 1;
+
 
 	
 
@@ -84,7 +86,7 @@ private:
 
 	// Input image
 
-	vector<vector<double>> initialImage;
+	vector<vector<vector<double>>> initialImage;
 
 
 
@@ -169,6 +171,21 @@ public:
 
 	CNN();
 
+
+
+
+
+//*********************************** Predict *******************************
+
+	void forwardPropagationConvLayers();
+
+	void forwardPropagationFullLayers();
+
+	void forwardPropagationOutputLayer();
+
+public:
+
+	vector<double> predict(vector<vector<vector<double>>>);
 
 };
 

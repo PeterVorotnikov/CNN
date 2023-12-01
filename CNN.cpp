@@ -287,11 +287,17 @@ void CNN::statesInit() {
 
 	// Input image
 
-	initialImage.resize(imageHeight);
+	initialImage.resize(nOfImageChannels);
 
-	for (int row = 0; row < imageHeight; row++) {
+	for (int channel = 0; channel < nOfImageChannels; channel++) {
 
-		initialImage[row].resize(imageWidth);
+		initialImage[channel].resize(imageHeight);
+
+		for (int row = 0; row < imageHeight; row++) {
+
+			initialImage[channel][row].resize(imageWidth);
+
+		}
 
 	}
 
