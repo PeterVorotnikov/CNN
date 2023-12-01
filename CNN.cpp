@@ -281,43 +281,6 @@ void CNN::parametersInit() {
 
 
 
-void CNN::poolingMemoryInit() {
-
-	poolingMemory.resize(nOfConvLayers);
-
-	for (int convLayer = 0; convLayer < nOfConvLayers; convLayer++) {
-
-		int nOfMaps = nOfFilters[convLayer];
-
-		poolingMemory[convLayer].resize(nOfMaps);
-
-		for (int map = 0; map < nOfMaps; map++) {
-
-			int mapWidth = imageWidth / pow(sizeOfPooling, convLayer + 1);
-
-			int mapHeight = imageHeight / pow(sizeOfPooling, convLayer + 1);
-
-			poolingMemory[convLayer][map].resize(mapHeight);
-
-			for (int row = 0; row < mapHeight; row++) {
-
-				poolingMemory[convLayer][map][row].resize(mapWidth);
-
-				for (int col = 0; col < mapWidth; col++) {
-
-					poolingMemory[convLayer][map][row][col] = 0;
-
-				}
-
-			}
-
-		}
-
-	}
-
-}
-
-
 
 
 void CNN::statesInit() {
@@ -382,6 +345,8 @@ void CNN::statesInit() {
 
 
 
+	// Pooling layers
+
 	poolingLayersOutputs.resize(nOfConvLayers);
 
 	for (int convLayer = 0; convLayer < nOfConvLayers; convLayer++) {
@@ -399,6 +364,38 @@ void CNN::statesInit() {
 			for (int row = 0; row < mapHeight; row++) {
 
 				poolingLayersOutputs[convLayer][map][row].resize(mapWidth);
+
+			}
+
+		}
+
+	}
+
+	poolingMemory.resize(nOfConvLayers);
+
+	for (int convLayer = 0; convLayer < nOfConvLayers; convLayer++) {
+
+		int nOfMaps = nOfFilters[convLayer];
+
+		poolingMemory[convLayer].resize(nOfMaps);
+
+		for (int map = 0; map < nOfMaps; map++) {
+
+			int mapWidth = imageWidth / pow(sizeOfPooling, convLayer + 1);
+
+			int mapHeight = imageHeight / pow(sizeOfPooling, convLayer + 1);
+
+			poolingMemory[convLayer][map].resize(mapHeight);
+
+			for (int row = 0; row < mapHeight; row++) {
+
+				poolingMemory[convLayer][map][row].resize(mapWidth);
+
+				for (int col = 0; col < mapWidth; col++) {
+
+					poolingMemory[convLayer][map][row][col] = 0;
+
+				}
 
 			}
 
@@ -437,8 +434,6 @@ void CNN::statesInit() {
 void CNN::init() {
 
 	parametersInit();
-
-	poolingMemoryInit();
 
 	statesInit();
 

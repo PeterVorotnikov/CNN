@@ -100,8 +100,6 @@ private:
 
 	// Pooling layers
 
-	vector<vector<vector<vector<double>>>> poolingLayersInputs;
-
 	vector<vector<vector<vector<double>>>> poolingLayersOutputs;
 
 	vector<vector<vector<vector<int>>>> poolingMemory;
@@ -164,8 +162,6 @@ public:
 //*********************************** Constructors *******************************
 
 	void parametersInit();
-
-	void poolingMemoryInit();
 
 	void statesInit();
 
