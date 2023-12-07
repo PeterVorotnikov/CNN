@@ -477,3 +477,96 @@ CNN::CNN() {
 	init();
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+//*********************************** Predict *******************************
+
+void CNN::forwardPropagationConvLayers() {
+
+	for (int convLayer = 0; convLayer < nOfConvLayers; convLayer++) {
+
+		int nOfPrevLayerMaps = (convLayer == 0) ? nOfImageChannels : nOfFilters[convLayer - 1];
+
+		for (int map = 0; map < nOfFilters[convLayer]; map++) {
+
+			for (int mapRow = 0; mapRow < convLayersInputs[convLayer][map].size(); mapRow++) {
+
+				for (int mapCol = 0; mapCol < convLayersInputs[convLayer][map][mapRow].size();
+					mapCol++) {
+
+					// Calculate element
+
+					double value = 0;
+
+					for (int prevLayerMap = 0; prevLayerMap < nOfPrevLayerMaps; prevLayerMap++) {
+
+						for (int filterRow = 0; filterRow < sizeOfKernels[convLayer]; 
+							filterRow++) {
+
+							for (int filterCol = 0; filterCol < sizeOfKernels[convLayer];
+								filterCol++) {
+
+								int rowOffset = filterRow - sizeOfKernels[convLayer] / 2;
+
+								int colOffset = filterCol - sizeOfKernels[convLayer] / 2;
+
+								int prevLayerMapRow = mapRow + rowOffset;
+
+								int prevLayerMapCol = mapCol + colOffset;
+
+								if (prevLayerMapRow < 0 || prevLayerMapCol < 0 || 
+									prevLayerMapRow >= convLayersInputs[convLayer][map].size() ||
+									prevLayerMapCol >= convLayersInputs[convLayer][map][mapRow].size()) {
+
+									continue;
+
+								}
+
+								if (convLayer == 0) {
+
+									value += initialImage[prevLayerMap][prevLayerMapRow][prevLayerMapCol] *
+										convWeights[convLayer][map][prevLayerMap][filterRow][filterCol];
+
+								}
+
+								else {
+
+									value += poolingLayersOutputs[convLayer - 1][prevLayerMap][prevLayerMapRow][prevLayerMapCol] * 
+										convWeights[convLayer][map][prevLayerMap][filterRow][filterCol];
+
+								}
+
+								value++;
+
+							}
+
+						}
+
+					}
+
+					value += convBiases[convLayer][map];
+
+					convLayersInputs[convLayer][map][mapRow][mapCol] = value;
+
+					convLayersOutputs[convLayer][map][mapRow][mapCol] =
+						convActivation(convLayersInputs[convLayer][map][mapRow][mapCol]);
+
+				}
+
+			}
+
+		}
+
+	}
+
+}
