@@ -546,7 +546,7 @@ void CNN::forwardPropagationConvLayers() {
 
 								}
 
-								value++;
+								value++; // For debug
 
 							}
 
@@ -564,6 +564,100 @@ void CNN::forwardPropagationConvLayers() {
 				}
 
 			}
+
+			// Pooling
+
+			for (int poolRow = 0; poolRow < poolingLayersOutputs[convLayer][map].size(); poolRow++) {
+
+				for (int poolCol = 0; poolCol < poolingLayersOutputs[convLayer][map][poolRow].size(); poolCol++) {
+
+					// Pooling operation
+
+					vector<double> values = {
+						convLayersOutputs[convLayer][map][poolRow * 2][poolCol * 2],
+						convLayersOutputs[convLayer][map][poolRow * 2][poolCol * 2 + 1],
+						convLayersOutputs[convLayer][map][poolRow * 2 + 1][poolCol * 2],
+						convLayersOutputs[convLayer][map][poolRow * 2 + 1][poolCol * 2 + 1]
+					};
+
+					double maximum = -LLONG_MIN;
+
+					int index = 0;
+
+					for (int i = 0; i < values.size(); i++) {
+
+						if (maximum < values[i]) {
+
+							maximum = values[i];
+
+							index = i + 1;
+
+						}
+
+					}
+
+					poolingLayersOutputs[convLayer][map][poolRow][poolCol] = maximum;
+
+					poolingMemory[convLayer][map][poolRow][poolCol] = index;
+
+				}
+
+			}
+
+		}
+
+	}
+
+
+	// Full layers
+
+	for (int nOfInput = 0; nOfInput < fullLayersInputs[0].size(); nOfInput++) {
+
+		double value = fullBiases[0][nOfInput];
+
+		int nOfOutput = 0;
+
+		for (int map = 0; map < poolingLayersOutputs.back().size(); map++) {
+
+			for (int row = 0; row < poolingLayersOutputs.back()[map].size(); row++) {
+
+				for (int col = 0; col < poolingLayersOutputs.back()[map][row].size(); col++) {
+
+					// Calculate input value
+
+					value += fullWeights[0][nOfOutput][nOfInput] *
+						poolingLayersOutputs.back()[map][row][col];
+
+					nOfOutput++;
+
+				}
+
+			}
+
+		}
+
+		fullLayersInputs[0][nOfInput] = value;
+
+		fullLayersOutputs[0][nOfInput] = layerActivation(value);
+
+	}
+
+	for (int nOfFullLayer = 1; nOfFullLayer < nOfFullLayers; nOfFullLayer++) {
+
+		for (int nOfInput = 0; nOfInput < sizeOfLayers[nOfFullLayer]; nOfInput++) {
+
+			double value = fullBiases[nOfFullLayer][nOfInput];
+
+			for (int nOfOutput = 0; nOfOutput < sizeOfLayers[nOfFullLayer - 1]; nOfOutput++) {
+
+				value += fullLayersOutputs[nOfFullLayer - 1][nOfOutput] *
+					fullWeights[nOfFullLayer][nOfOutput][nOfInput];
+
+			}
+
+			fullLayersInputs[nOfFullLayer][nOfInput] = value;
+
+			fullLayersOutputs[nOfFullLayer][nOfInput] = layerActivation(value);
 
 		}
 

@@ -8,7 +8,7 @@ using namespace std;
 #pragma once
 class CNN
 {
-private:
+public:
 
 //***************************************** HyperParameters *****************************
 
