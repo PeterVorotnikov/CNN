@@ -67,7 +67,7 @@ double CNN::layerActivationDiff(double x) {
 
 
 
-vector<double> CNN::softmaxOutputs(vector<double> softmaxInputs, int nOfClass) {
+vector<double> CNN::softmaxOutputs(vector<double> softmaxInputs) {
 
 	double denominator = 0;
 
@@ -81,7 +81,7 @@ vector<double> CNN::softmaxOutputs(vector<double> softmaxInputs, int nOfClass) {
 
 	for (int i = 0; i < nOfClasses; i++) {
 
-		answer[i] = exp(softmaxInputs[i] / denominator);
+		answer[i] = exp(softmaxInputs[i]) / denominator;
 
 	}
 
@@ -662,5 +662,23 @@ void CNN::forwardPropagationConvLayers() {
 		}
 
 	}
+
+	// Output layer
+
+	for (int nOfInput = 0; nOfInput < nOfClasses; nOfInput++) {
+
+		double value = outputBiases[nOfInput];
+
+		for (int nOfOutput = 0; nOfOutput < sizeOfLayers.back(); nOfOutput++) {
+
+			value += fullLayersOutputs.back()[nOfOutput] * outputWeights[nOfOutput][nOfInput];
+
+		}
+
+		outputInputs[nOfInput] = value;
+
+	}
+
+	outputOutputs = softmaxOutputs(outputInputs);
 
 }

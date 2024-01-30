@@ -148,7 +148,7 @@ public:
 
 
 
-	vector<double> softmaxOutputs(vector<double> softmaxInputs, int nOfClass);
+	vector<double> softmaxOutputs(vector<double> softmaxInputs);
 
 
 
