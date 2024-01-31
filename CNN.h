@@ -2,6 +2,7 @@
 #include <cmath>
 #include <random>
 #include <time.h>
+#include <iostream>
 
 using namespace std;
 

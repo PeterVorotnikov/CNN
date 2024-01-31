@@ -737,6 +737,8 @@ void CNN::backPropagation() {
 
 	lossValue = -log(outputOutputs[targetClass]);
 
+	// Output layer
+
 	for (int nOfOutputNeuron = 0; nOfOutputNeuron < nOfClasses; nOfOutputNeuron++) {
 
 		outputDiff[nOfOutputNeuron] = outputOutputs[nOfOutputNeuron];
@@ -744,6 +746,98 @@ void CNN::backPropagation() {
 		if (nOfOutputNeuron == targetClass) {
 
 			outputDiff[nOfOutputNeuron] -= 1.0;
+
+		}
+
+		outputBiasesDiff[nOfOutputNeuron] = outputDiff[nOfOutputNeuron];
+
+		for (int prevLayerNeuron = 0; prevLayerNeuron < sizeOfLayers.back(); prevLayerNeuron++) {
+
+			outputWeightsDiff[prevLayerNeuron][nOfOutputNeuron] = outputDiff[nOfOutputNeuron] *
+				fullLayersOutputs.back()[prevLayerNeuron];
+
+		}
+
+	}
+
+	// Full layers
+
+	for (int fullLayer = sizeOfLayers.size() - 1; fullLayer >= 0; fullLayer--) {
+
+		int nOfNextLayerNeurons;
+
+		if (fullLayer == sizeOfLayers.size() - 1) {
+
+			nOfNextLayerNeurons = nOfClasses;
+
+		}
+
+		else {
+
+			nOfNextLayerNeurons = fullLayersDiff[fullLayer + 1].size();
+
+		}
+
+		for (int currNeuron = 0; currNeuron < fullLayersDiff[fullLayer].size(); currNeuron++) {
+
+			double value = 0;
+
+			for (int nextNeuron = 0; nextNeuron < nOfNextLayerNeurons; nextNeuron++) {
+
+				if (fullLayer == sizeOfLayers.size() - 1) {
+
+					value += outputDiff[nextNeuron] * outputWeights[currNeuron][nextNeuron];
+
+				}
+
+				else {
+
+					value += fullLayersDiff[fullLayer + 1][nextNeuron] *
+						fullWeights[fullLayer + 1][currNeuron][nextNeuron];
+
+				}
+
+			}
+
+			fullLayersDiff[fullLayer][currNeuron] = layerActivationDiff(value);
+
+			fullBiasesDiff[fullLayer][currNeuron] = fullLayersDiff[fullLayer][currNeuron];
+
+			if (fullLayer > 0) {
+
+				for (int prevNeuron = 0; prevNeuron < fullLayersDiff[fullLayer - 1].size(); prevNeuron++) {
+
+					fullWeightsDiff[fullLayer][prevNeuron][currNeuron] =
+						fullLayersDiff[fullLayer][currNeuron] *
+						fullLayersOutputs[fullLayer - 1][prevNeuron];
+
+				}
+
+			}
+
+		}
+
+	}
+
+	int nOfPoolingOutNeuron = 0;
+
+	for (int map = 0; map < poolingLayersOutputs.back().size(); map++) {
+
+		for (int row = 0; row < poolingLayersOutputs.back()[map].size(); row++) {
+
+			for (int col = 0; col < poolingLayersOutputs.back()[map][row].size(); col++) {
+
+				for (int fullNeuron = 0; fullNeuron < fullLayersDiff[0].size(); fullNeuron++) {
+
+					fullWeightsDiff[0][nOfPoolingOutNeuron][fullNeuron] =
+						fullLayersDiff[0][fullNeuron] *
+						poolingLayersOutputs.back()[map][row][col];
+
+				}
+
+				nOfPoolingOutNeuron++;
+
+			}
 
 		}
 
