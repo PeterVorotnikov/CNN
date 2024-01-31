@@ -34,6 +34,10 @@ public:
 	int nOfImageChannels = 1;
 
 
+	int targetClass = 0;
+
+	double lossValue = 0;
+
 	
 
 
@@ -177,15 +181,17 @@ public:
 
 //*********************************** Predict *******************************
 
-	void forwardPropagationConvLayers();
+	void forwardPropagation();
 
-	void forwardPropagationFullLayers();
+//*********************************** Train *********************************
 
-	void forwardPropagationOutputLayer();
+	void backPropagation();
 
 public:
 
-	vector<double> predict(vector<vector<vector<double>>>);
+	vector<double> predict(vector<vector<vector<double>>> image);
+
+	double fit(vector<vector<vector<double>>> image, int target);
 
 };
 

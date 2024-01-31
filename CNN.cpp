@@ -491,7 +491,7 @@ CNN::CNN() {
 
 //*********************************** Predict *******************************
 
-void CNN::forwardPropagationConvLayers() {
+void CNN::forwardPropagation() {
 
 	for (int convLayer = 0; convLayer < nOfConvLayers; convLayer++) {
 
@@ -680,5 +680,73 @@ void CNN::forwardPropagationConvLayers() {
 	}
 
 	outputOutputs = softmaxOutputs(outputInputs);
+
+}
+
+
+
+vector<double> CNN::predict(vector<vector<vector<double>>> image) {
+
+	if (image.size() != nOfImageChannels) {
+
+		return { -1 };
+
+	}
+
+	for (int channel = 0; channel < nOfImageChannels; channel++) {
+
+		if (image[channel].size() != imageHeight) {
+
+			return { -1 };
+
+		}
+
+		for (int row = 0; row < imageHeight; row++) {
+
+			if (image[channel][row].size() != imageWidth) {
+
+				return { -1 };
+
+			}
+
+			for (int col = 0; col < imageWidth; col++) {
+
+				initialImage[channel][row][col] = image[channel][row][col];
+
+			}
+
+		}
+
+	}
+
+	forwardPropagation();
+
+	return outputOutputs;
+
+}
+
+
+
+
+
+
+
+//*********************************** Train *******************************
+
+void CNN::backPropagation() {
+
+	lossValue = -log(outputOutputs[targetClass]);
+
+	for (int nOfOutputNeuron = 0; nOfOutputNeuron < nOfClasses; nOfOutputNeuron++) {
+
+		outputDiff[nOfOutputNeuron] = outputOutputs[nOfOutputNeuron];
+
+		if (nOfOutputNeuron == targetClass) {
+
+			outputDiff[nOfOutputNeuron] -= 1.0;
+
+		}
+
+	}
 
 }
