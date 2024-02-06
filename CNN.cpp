@@ -598,7 +598,7 @@ void CNN::forwardPropagation() {
 
 								}
 
-								value++; // For debug
+								value += 0.1; // For debug
 
 							}
 
@@ -854,8 +854,6 @@ void CNN::backPropagation() {
 			fullLayersDiff[fullLayer][currNeuron] = value * 
 				layerActivationDiff(fullLayersInputs[fullLayer][currNeuron]);
 
-			cout << fullLayersInputs[fullLayer][currNeuron] << endl;
-
 			fullBiasesDiff[fullLayer][currNeuron] = fullLayersDiff[fullLayer][currNeuron];
 
 			if (fullLayer > 0) {
@@ -1007,7 +1005,7 @@ void CNN::backPropagation() {
 
 					for (int col = 0; col < convWeights[convPoolingLayer][map][prevMap][row].size(); col++) {
 
-						convWeights[convPoolingLayer][map][prevMap][row][col] = 0;
+						convWeightsDiff[convPoolingLayer][map][prevMap][row][col] = 0;
 
 					}
 
