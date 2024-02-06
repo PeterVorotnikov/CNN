@@ -90,6 +90,50 @@ vector<double> CNN::softmaxOutputs(vector<double> softmaxInputs) {
 
 
 
+//***************************************** Tensor transpose *******************
+
+
+vector<vector<double>> CNN::tensorTranspose(vector<vector<double>> tensor) {
+
+	int n = tensor.size();
+
+	int m = tensor[0].size();
+
+	for (int r = 0; r < n; r++) {
+
+		int c1 = 0, c2 = m - 1;
+
+		while (c1 < c2) {
+
+			swap(tensor[r][c1], tensor[r][c2]);
+
+			c1++;
+
+			c2--;
+
+		}
+
+	}
+
+	for (int c = 0; c < m; c++) {
+
+		int r1 = 0, r2 = n - 1;
+
+		while (r1 < r2) {
+
+			swap(tensor[r1][c], tensor[r2][c]);
+
+			r1++;
+
+			r2--;
+
+		}
+
+	}
+
+	return tensor;
+
+}
 
 
 
@@ -355,9 +399,13 @@ void CNN::statesInit() {
 
 	poolingLayersOutputs.resize(nOfConvLayers);
 
+	poolingLayersDiff.resize(nOfConvLayers);
+
 	for (int convLayer = 0; convLayer < nOfConvLayers; convLayer++) {
 
 		poolingLayersOutputs[convLayer].resize(nOfFilters[convLayer]);
+
+		poolingLayersDiff[convLayer].resize(nOfFilters[convLayer]);
 
 		for (int map = 0; map < nOfFilters[convLayer]; map++) {
 
@@ -367,9 +415,13 @@ void CNN::statesInit() {
 
 			poolingLayersOutputs[convLayer][map].resize(mapHeight);
 
+			poolingLayersDiff[convLayer][map].resize(mapHeight);
+
 			for (int row = 0; row < mapHeight; row++) {
 
 				poolingLayersOutputs[convLayer][map][row].resize(mapWidth);
+
+				poolingLayersDiff[convLayer][map][row].resize(mapWidth);
 
 			}
 
@@ -799,7 +851,10 @@ void CNN::backPropagation() {
 
 			}
 
-			fullLayersDiff[fullLayer][currNeuron] = layerActivationDiff(value);
+			fullLayersDiff[fullLayer][currNeuron] = value * 
+				layerActivationDiff(fullLayersInputs[fullLayer][currNeuron]);
+
+			cout << fullLayersInputs[fullLayer][currNeuron] << endl;
 
 			fullBiasesDiff[fullLayer][currNeuron] = fullLayersDiff[fullLayer][currNeuron];
 
@@ -836,6 +891,185 @@ void CNN::backPropagation() {
 				}
 
 				nOfPoolingOutNeuron++;
+
+			}
+
+		}
+
+	}
+
+	// Pooling and convolution layers
+
+	for (int convPoolingLayer = nOfConvLayers - 1; convPoolingLayer >= 0; convPoolingLayer--) {
+
+		// Pooling and conv layer
+
+		int currNeuron = 0;
+
+		for (int map = 0; map < poolingLayersOutputs[convPoolingLayer].size(); map++) {
+
+			for (int row = 0; row < poolingLayersOutputs[convPoolingLayer][map].size(); row++) {
+
+				for (int col = 0; col < poolingLayersOutputs[convPoolingLayer][map][row].size(); col++) {
+
+					if (convPoolingLayer == nOfConvLayers - 1) {
+
+						double value = 0;
+
+						for (int nextNeuron = 0; nextNeuron < fullLayersDiff[0].size(); nextNeuron++) {
+
+							value += fullLayersDiff[0][nextNeuron] *
+								fullWeights[0][currNeuron][nextNeuron];
+
+						}
+
+						poolingLayersDiff[convPoolingLayer][map][row][col] = value;
+
+					}
+
+					else {
+
+						double value = 0;
+
+						for (int nextMap = 0; nextMap < convLayersDiff[convPoolingLayer + 1].size(); nextMap++) {
+
+							vector<vector<double>> filter = convWeights[convPoolingLayer + 1][nextMap][map];
+
+							filter = tensorTranspose(filter);
+
+							for (int filterRow = 0; filterRow < filter.size(); filterRow++) {
+
+								for (int filterCol = 0; filterCol < filter[filterRow].size(); filterCol++) {
+
+									int rowOffset = filterRow - filter.size() / 2;
+
+									int colOffset = filterCol - filter[filterRow].size() / 2;
+
+									if (row + rowOffset < 0 || row + rowOffset >= poolingLayersOutputs[convPoolingLayer][map].size() ||
+										col + colOffset < 0 || col + colOffset >= poolingLayersOutputs[convPoolingLayer][map][row].size()) {
+
+										continue;
+
+									}
+
+									value += convLayersDiff[convPoolingLayer + 1][nextMap][row + rowOffset][col + colOffset] *
+										convWeights[convPoolingLayer + 1][nextMap][map][filterRow][filterCol];
+
+								}
+
+							}
+
+						}
+
+						poolingLayersDiff[convPoolingLayer][map][row][col] = value;
+
+					}
+
+					currNeuron++;
+
+					int rowPoolingOffset = 0;
+
+					int colPoolingOffset = 0;
+
+					int poolMemory = poolingMemory[convPoolingLayer][map][row][col];
+
+					if (poolMemory > 2) {
+
+						rowPoolingOffset = 1;
+
+					}
+
+					if (poolMemory % 2 == 0) {
+
+						colPoolingOffset = 1;
+
+					}
+
+					convLayersDiff[convPoolingLayer][map][row * 2 + rowPoolingOffset][col * 2 + colPoolingOffset] =
+						poolingLayersDiff[convPoolingLayer][map][row][col] *
+						convActivationDiff(convLayersInputs[convPoolingLayer][map][row * 2 + rowPoolingOffset][col * 2 + colPoolingOffset]);
+
+				}
+
+			}
+
+		}
+
+		// Zero conv weights gradients
+
+		for (int map = 0; map < convWeights[convPoolingLayer].size(); map++) {
+
+			convBiasesDiff[convPoolingLayer][map] = 0;
+
+			for (int prevMap = 0; prevMap < convWeights[convPoolingLayer][map].size(); prevMap++) {
+
+				for (int row = 0; row < convWeights[convPoolingLayer][map][prevMap].size(); row++) {
+
+					for (int col = 0; col < convWeights[convPoolingLayer][map][prevMap][row].size(); col++) {
+
+						convWeights[convPoolingLayer][map][prevMap][row][col] = 0;
+
+					}
+
+				}
+
+			}
+
+		}
+
+		// Calc conv weights gradients
+
+		for (int currMap = 0; currMap < convLayersDiff[convPoolingLayer].size(); currMap++) {
+
+			for (int currRow = 0; currRow < convLayersDiff[convPoolingLayer][currMap].size(); currRow++) {
+
+				for (int currCol = 0; currCol < convLayersDiff[convPoolingLayer][currMap][currRow].size(); currCol++) {
+
+					convBiasesDiff[convPoolingLayer][currMap] +=
+						convLayersDiff[convPoolingLayer][currMap][currRow][currCol];
+
+					for (int filterMap = 0; filterMap < convWeightsDiff[convPoolingLayer][currMap].size(); filterMap++) {
+
+						for (int filterRow = 0; filterRow < convWeightsDiff[convPoolingLayer][currMap][filterMap].size(); filterRow++) {
+
+							for (int filterCol = 0; filterCol < convWeightsDiff[convPoolingLayer][currMap][filterMap][filterRow].size(); filterCol++) {
+
+								int rowOffset = filterRow - convWeightsDiff[convPoolingLayer][currMap][filterMap].size() / 2;
+
+								int colOffset = filterCol - convWeightsDiff[convPoolingLayer][currMap][filterMap][filterRow].size() / 2;
+
+								if (currRow + rowOffset < 0 ||
+									currRow + rowOffset >= convLayersDiff[convPoolingLayer][currMap].size() ||
+									currCol + colOffset < 0 ||
+									currCol + colOffset >= convLayersDiff[convPoolingLayer][currMap][currRow].size()) {
+
+									continue;
+
+								}
+
+								if (convPoolingLayer > 0) {
+
+									convWeightsDiff[convPoolingLayer][currMap][filterMap][filterRow][filterCol] +=
+										convLayersDiff[convPoolingLayer][currMap][currRow][currCol] *
+										poolingLayersOutputs[convPoolingLayer - 1][filterMap][currRow + rowOffset][currCol + colOffset];
+
+								}
+
+								else {
+
+									convWeightsDiff[convPoolingLayer][currMap][filterMap][filterRow][filterCol] +=
+										convLayersDiff[convPoolingLayer][currMap][currRow][currCol] *
+										initialImage[filterMap][currRow + rowOffset][currCol + colOffset];
+
+								}
+
+							}
+
+						}
+
+					}
+
+				}
 
 			}
 

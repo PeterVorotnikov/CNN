@@ -109,6 +109,8 @@ public:
 
 	vector<vector<vector<vector<double>>>> poolingLayersOutputs;
 
+	vector<vector<vector<vector<double>>>> poolingLayersDiff;
+
 	vector<vector<vector<vector<int>>>> poolingMemory;
 
 
@@ -154,6 +156,12 @@ public:
 
 
 	vector<double> softmaxOutputs(vector<double> softmaxInputs);
+
+
+
+//***************************************** Tensor transpose *******************
+
+	vector<vector<double>> tensorTranspose(vector<vector<double>> tensor);
 
 
 
