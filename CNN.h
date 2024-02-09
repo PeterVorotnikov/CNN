@@ -3,6 +3,7 @@
 #include <random>
 #include <time.h>
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -208,6 +209,12 @@ public:
 	double fit(vector<vector<vector<double>>> image, int target);
 
 	double getLoss(vector<vector<vector<double>>> image, int target);
+
+//*********************************** Save/load *********************************
+
+	bool save(string fileName);
+
+	bool load(string fileName);
 
 };
 

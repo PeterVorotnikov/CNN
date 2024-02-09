@@ -1258,3 +1258,186 @@ double CNN::getLoss(vector<vector<vector<double>>> image, int target) {
 	return lossValue;
 
 }
+
+
+
+
+
+
+
+
+
+
+//*********************************** Save/load *********************************
+
+bool CNN::save(string fileName) {
+
+	ofstream fileOut(fileName);
+
+	if (!fileOut.is_open()) {
+
+		return false;
+
+	}
+
+	// Conv layers
+
+	for (int layer = 0; layer < convWeights.size(); layer++) {
+
+		for (int filter = 0; filter < convWeights[layer].size(); filter++) {
+
+			fileOut << convBiases[layer][filter] << " ";
+
+			for (int map = 0; map < convWeights[layer][filter].size(); map++) {
+
+				for (int row = 0; row < convWeights[layer][filter][map].size(); row++) {
+
+					for (int col = 0; col < convWeights[layer][filter][map][row].size(); col++) {
+
+						fileOut << convWeights[layer][filter][map][row][col] << " ";
+
+					}
+
+				}
+
+			}
+
+		}
+
+	}
+
+	// Full layers
+
+	for (int layer = 0; layer < fullWeights.size(); layer++) {
+
+		for (int prev = 0; prev < fullWeights[layer].size(); prev++) {
+
+			for (int curr = 0; curr < fullWeights[layer][prev].size(); curr++) {
+
+				fileOut << fullWeights[layer][prev][curr] << " ";
+
+			}
+
+		}
+
+	}
+
+	for (int layer = 0; layer < fullBiases.size(); layer++) {
+
+		for (int curr = 0; curr < fullBiases[layer].size(); curr++) {
+
+			fileOut << fullBiases[layer][curr] << " ";
+
+		}
+
+	}
+
+	// Output layer
+
+	for (int prev = 0; prev < outputWeights.size(); prev++) {
+
+		for (int output = 0; output < outputWeights[prev].size(); output++) {
+
+			fileOut << outputWeights[prev][output] << " ";
+
+		}
+
+	}
+
+	for (int output = 0; output < outputBiases.size(); output++) {
+
+		fileOut << outputBiases[output] << " ";
+
+	}
+
+	fileOut.close();
+
+	return true;
+
+}
+
+bool CNN::load(string fileName) {
+
+	ifstream fileIn(fileName);
+
+	if (!fileIn.is_open()) {
+
+		return false;
+
+	}
+
+	// Conv layers
+
+	for (int layer = 0; layer < convWeights.size(); layer++) {
+
+		for (int filter = 0; filter < convWeights[layer].size(); filter++) {
+
+			fileIn >> convBiases[layer][filter];
+
+			for (int map = 0; map < convWeights[layer][filter].size(); map++) {
+
+				for (int row = 0; row < convWeights[layer][filter][map].size(); row++) {
+
+					for (int col = 0; col < convWeights[layer][filter][map][row].size(); col++) {
+
+						fileIn >> convWeights[layer][filter][map][row][col];
+
+					}
+
+				}
+
+			}
+
+		}
+
+	}
+
+	// Full layers
+
+	for (int layer = 0; layer < fullWeights.size(); layer++) {
+
+		for (int prev = 0; prev < fullWeights[layer].size(); prev++) {
+
+			for (int curr = 0; curr < fullWeights[layer][prev].size(); curr++) {
+
+				fileIn >> fullWeights[layer][prev][curr];
+
+			}
+
+		}
+
+	}
+
+	for (int layer = 0; layer < fullBiases.size(); layer++) {
+
+		for (int curr = 0; curr < fullBiases[layer].size(); curr++) {
+
+			fileIn >> fullBiases[layer][curr];
+
+		}
+
+	}
+
+	// Output layer
+
+	for (int prev = 0; prev < outputWeights.size(); prev++) {
+
+		for (int output = 0; output < outputWeights[prev].size(); output++) {
+
+			fileIn >> outputWeights[prev][output];
+
+		}
+
+	}
+
+	for (int output = 0; output < outputBiases.size(); output++) {
+
+		fileIn >> outputBiases[output];
+
+	}
+
+	fileIn.close();
+
+	return true;
+
+}
