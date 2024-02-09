@@ -1160,3 +1160,101 @@ void CNN::updateWeights() {
 	}
 
 }
+
+double CNN::fit(vector<vector<vector<double>>> image, int target) {
+
+	if (target < 0 || target >= nOfClasses) {
+
+		return -1;
+
+	}
+
+	targetClass = target;
+
+	if (image.size() != nOfImageChannels) {
+
+		return -1;
+
+	}
+
+	for (int channel = 0; channel < nOfImageChannels; channel++) {
+
+		if (image[channel].size() != imageHeight) {
+
+			return -1;
+
+		}
+
+		for (int row = 0; row < imageHeight; row++) {
+
+			if (image[channel][row].size() != imageWidth) {
+
+				return -1;
+
+			}
+
+			for (int col = 0; col < imageWidth; col++) {
+
+				initialImage[channel][row][col] = image[channel][row][col];
+
+			}
+
+		}
+
+	}
+
+	backPropagation();
+
+	updateWeights();
+
+	return lossValue;
+
+}
+
+double CNN::getLoss(vector<vector<vector<double>>> image, int target) {
+
+	if (target < 0 || target >= nOfClasses) {
+
+		return -1;
+
+	}
+
+	targetClass = target;
+
+	if (image.size() != nOfImageChannels) {
+
+		return -1;
+
+	}
+
+	for (int channel = 0; channel < nOfImageChannels; channel++) {
+
+		if (image[channel].size() != imageHeight) {
+
+			return -1;
+
+		}
+
+		for (int row = 0; row < imageHeight; row++) {
+
+			if (image[channel][row].size() != imageWidth) {
+
+				return -1;
+
+			}
+
+			for (int col = 0; col < imageWidth; col++) {
+
+				initialImage[channel][row][col] = image[channel][row][col];
+
+			}
+
+		}
+
+	}
+
+	forwardPropagation();
+
+	return lossValue;
+
+}

@@ -207,5 +207,7 @@ public:
 
 	double fit(vector<vector<vector<double>>> image, int target);
 
+	double getLoss(vector<vector<vector<double>>> image, int target);
+
 };
 
