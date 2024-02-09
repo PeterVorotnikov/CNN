@@ -39,6 +39,9 @@ public:
 
 	double lossValue = 0;
 
+
+	double learningRate = 0.1;
+
 	
 
 
@@ -195,6 +198,8 @@ public:
 //*********************************** Train *********************************
 
 	void backPropagation();
+
+	void updateWeights();
 
 public:
 

@@ -8,32 +8,12 @@
 
 double CNN::convActivation(double x) {
 
-	if (x > 0) {
-
-		return x;
-
-	}
-
-	else {
-
-		return 0;
-
-	}
+	return 1.0 / (1.0 + exp(-x));
 }
 
 double CNN::convActivationDiff(double x) {
 
-	if (x > 0) {
-
-		return 1;
-
-	}
-
-	else {
-
-		return 0;
-
-	}
+	return convActivation(x) * (1 - convActivation(x));
 }
 
 
@@ -200,7 +180,7 @@ void CNN::parametersInit() {
 
 						int r = rand();
 
-						double value = (double)r / (double)RAND_MAX - 0.5;
+						double value = (double)r / (double)RAND_MAX / 100;
 
 						convWeights[convLayer][filter][k][i][j] = value;
 
@@ -340,6 +320,12 @@ void CNN::statesInit() {
 		for (int row = 0; row < imageHeight; row++) {
 
 			initialImage[channel][row].resize(imageWidth);
+
+			for (int col = 0; col < initialImage[channel][row].size(); col++) {
+
+				initialImage[channel][row][col] = (double)rand() / (double)RAND_MAX;
+
+			}
 
 		}
 
@@ -598,7 +584,7 @@ void CNN::forwardPropagation() {
 
 								}
 
-								value += 0.1; // For debug
+								//value += 0.1; // For debug
 
 							}
 
@@ -732,6 +718,8 @@ void CNN::forwardPropagation() {
 	}
 
 	outputOutputs = softmaxOutputs(outputInputs);
+
+	lossValue = -log(outputOutputs[targetClass]);
 
 }
 
@@ -900,6 +888,22 @@ void CNN::backPropagation() {
 
 	for (int convPoolingLayer = nOfConvLayers - 1; convPoolingLayer >= 0; convPoolingLayer--) {
 
+		// Zero conv layers diff
+
+		for (int map = 0; map < convLayersDiff[convPoolingLayer].size(); map++) {
+
+			for (int row = 0; row < convLayersDiff[convPoolingLayer][map].size(); row++) {
+
+				for (int col = 0; col < convLayersDiff[convPoolingLayer][map][row].size(); col++) {
+
+					convLayersDiff[convPoolingLayer][map][row][col] = 0;
+
+				}
+
+			}
+
+		}
+
 		// Pooling and conv layer
 
 		int currNeuron = 0;
@@ -950,8 +954,11 @@ void CNN::backPropagation() {
 
 									}
 
+									/*value += convLayersDiff[convPoolingLayer + 1][nextMap][row + rowOffset][col + colOffset] *
+										convWeights[convPoolingLayer + 1][nextMap][map][filterRow][filterCol];*/
+
 									value += convLayersDiff[convPoolingLayer + 1][nextMap][row + rowOffset][col + colOffset] *
-										convWeights[convPoolingLayer + 1][nextMap][map][filterRow][filterCol];
+										filter[filterRow][filterCol];
 
 								}
 
@@ -1072,6 +1079,83 @@ void CNN::backPropagation() {
 			}
 
 		}
+
+	}
+
+}
+
+
+void CNN::updateWeights() {
+
+	// Conv layers
+
+	for (int layer = 0; layer < convWeights.size(); layer++) {
+
+		for (int filter = 0; filter < convWeights[layer].size(); filter++) {
+
+			convBiases[layer][filter] -= learningRate * convBiasesDiff[layer][filter];
+
+			for (int map = 0; map < convWeights[layer][filter].size(); map++) {
+
+				for (int row = 0; row < convWeights[layer][filter][map].size(); row++) {
+
+					for (int col = 0; col < convWeights[layer][filter][map][row].size(); col++) {
+
+						convWeights[layer][filter][map][row][col] -= learningRate *
+							convWeightsDiff[layer][filter][map][row][col];
+
+					}
+
+				}
+
+			}
+
+		}
+
+	}
+
+	// Full layers
+
+	for (int layer = 0; layer < fullWeights.size(); layer++) {
+
+		for (int prev = 0; prev < fullWeights[layer].size(); prev++) {
+
+			for (int curr = 0; curr < fullWeights[layer][prev].size(); curr++) {
+
+				fullWeights[layer][prev][curr] -= learningRate *
+					fullWeightsDiff[layer][prev][curr];
+
+			}
+
+		}
+
+	}
+
+	for (int layer = 0; layer < fullBiases.size(); layer++) {
+
+		for (int curr = 0; curr < fullBiases[layer].size(); curr++) {
+
+			fullBiases[layer][curr] -= learningRate * fullBiasesDiff[layer][curr];
+
+		}
+
+	}
+
+	// Output layer
+
+	for (int prev = 0; prev < outputWeights.size(); prev++) {
+
+		for (int output = 0; output < outputWeights[prev].size(); output++) {
+
+			outputWeights[prev][output] -= learningRate * outputWeightsDiff[prev][output];
+
+		}
+
+	}
+
+	for (int output = 0; output < outputBiases.size(); output++) {
+
+		outputBiases[output] -= learningRate * outputBiasesDiff[output];
 
 	}
 
