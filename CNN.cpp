@@ -8,12 +8,34 @@
 
 double CNN::convActivation(double x) {
 
-	return 1.0 / (1.0 + exp(-x));
+	if (x >= 0) {
+
+		return x;
+
+	}
+
+	else {
+
+		return 0;
+
+	}
+
 }
 
 double CNN::convActivationDiff(double x) {
 
-	return convActivation(x) * (1 - convActivation(x));
+	if (x >= 0) {
+
+		return 1;
+
+	}
+
+	else {
+
+		return 0;
+
+	}
+
 }
 
 
@@ -180,7 +202,7 @@ void CNN::parametersInit() {
 
 						int r = rand();
 
-						double value = (double)r / (double)RAND_MAX / 100;
+						double value = ((double)r / (double)RAND_MAX) / 100;
 
 						convWeights[convLayer][filter][k][i][j] = value;
 
@@ -1202,6 +1224,8 @@ double CNN::fit(vector<vector<vector<double>>> image, int target) {
 		}
 
 	}
+
+	forwardPropagation();
 
 	backPropagation();
 
