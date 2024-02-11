@@ -38,6 +38,18 @@ double CNN::convActivationDiff(double x) {
 
 }
 
+//double CNN::convActivation(double x) {
+//
+//	return 1.0 / (1.0 + exp(-x));
+//
+//}
+//
+//double CNN::convActivationDiff(double x) {
+//
+//	return convActivation(x) * (1 - convActivation(x));
+//
+//}
+
 
 
 

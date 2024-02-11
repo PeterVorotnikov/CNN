@@ -26,7 +26,7 @@ public:
 
 	vector<int> sizeOfKernels = { 5, 5 };
 
-	vector<int> sizeOfLayers = { 100, 80 };
+	vector<int> sizeOfLayers = { 80, 60 };
 
 
 	int imageWidth = 28;
@@ -41,7 +41,7 @@ public:
 	double lossValue = 0;
 
 
-	double learningRate = 0.1;
+	double learningRate = 0.01;
 
 	
 

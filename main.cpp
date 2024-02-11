@@ -6,75 +6,95 @@
 using namespace std;
 
 int main() {
+	int nOfSamples = 60000;
+
+	int setRand = 0;
+	cout << "Set rand:\n";
+	cin >> setRand;
+	srand(setRand);
+
+	string dataFileName = "fashion-mnist_train.csv";
+
+	string modelName;
+	cout << "Enter the file name of the loading model:\n";
+	cin >> modelName;
+
+	int epochs;
+	cout << "Enter the number of epochs:\n";
+	cin >> epochs;
+
 	CNN cnn;
-
-	/*for (int i = 0; i < 100; i++) {
-		cnn.forwardPropagation();
-		cnn.backPropagation();
-		cout << cnn.convBiasesDiff[0][5] << " ";
-		double loss1 = cnn.lossValue;
-		cnn.convBiases[0][5] += 0.000001;
-		cnn.forwardPropagation();
-		double loss2 = cnn.lossValue;
-		cout << (loss2 - loss1) / 0.000001 << endl;
-		cout << loss1 << " " << loss2 << endl;
-		cnn.convBiases[0][5] -= 0.000001;
-		cnn.forwardPropagation();
-		cnn.backPropagation();
-		cnn.updateWeights();
-	}*/
-
-	/*for (int i = 0; i < 100; i++) {
-		cnn.forwardPropagation();
-		cnn.backPropagation();
-		cnn.updateWeights();
-		cnn.forwardPropagation();
-		for (int j = 0; j < 10; j++) {
-			cout << cnn.outputOutputs[j] << " ";
-		}
-		cout << "\t" << cnn.convBiases[0][0];
-		cout << endl;
+	if (modelName != "-") {
+		cnn.load(modelName);
 	}
-	cnn.save("model.txt");*/
 
-	/*cnn.load("model.txt");
-	cnn.forwardPropagation();
-	for (int i = 0; i < 10; i++) {
-		cout << cnn.outputOutputs[i] << " ";
-	}*/
+	ofstream outFile1("out1.csv");
+	outFile1 << "epoch,sample,p0,p1,p2,p3,p4,p5,p6,p7,p8,p9,label,loss\n";
+	outFile1.close();
 
+	ofstream outFile2("out2.csv");
+	outFile2 << "epoch,loss,accuracy\n";
+	outFile2.close();
 
-	ifstream file("fashion-mnist_train.csv");
-	string density = "¶@ØÆMåBNÊßÔR#8Q&mÃ0À$GXZA5ñk2S%±3Fz¢yÝCJf1t7ªLc¿+?(r/¤²!*;\"^:,'.`";
-	reverse(density.begin(), density.end());
-	int r = 160;
-	for (int i = 0; i < r; i++) {
+	for (int e = 1; e <= epochs; e++) {
+
+		ifstream dataFile(dataFileName);
 		string s;
-		getline(file, s);
-	}
-	int label;
-	file >> label;
-	cout << "Label: " << label << "\n\n";
-	for (int r = 0; r < 28; r++) {
-		for (int c = 0; c < 28; c++) {
-			int val;
-			file >> val;
-			int step = 255 / density.size();
-			if (val > step * density.size()) {
-				val = step * density.size();
-			}
-			int p = 0;
-			int index = 0;
-			for (int i = 0; i < density.size(); i++) {
-				p += step;
-				if (val <= p) {
-					index = i;
-					break;
+		getline(dataFile, s);
+
+		double sumLoss = 0;
+		int nOfCorrectAnswers = 0;
+
+		for (int k = 1; k <= nOfSamples; k++) {
+
+			int label;
+			dataFile >> label;
+			vector<vector<vector<double>>> image(1, vector<vector<double>>(28, vector<double>(28)));
+			for (int r = 0; r < 28; r++) {
+				for (int c = 0; c < 28; c++) {
+					int value;
+					dataFile >> value;
+					image[0][r][c] = (double)value / 255.0;
 				}
 			}
-			cout << density[index] << density[index];
+
+			cnn.fit(image, label);
+			double loss = cnn.getLoss(image, label);
+			vector<double> out = cnn.predict(image);
+
+			outFile1.open("out1.csv", ios_base::app);
+			outFile1 << e << "," << k << ",";
+			for (int i = 0; i < out.size(); i++) {
+				outFile1 << out[i] << ",";
+			}
+			outFile1 << label << ",";
+			outFile1 << loss << "\n";
+			outFile1.close();
+
+			sumLoss += loss;
+			if (out[label] > 0.5) {
+				nOfCorrectAnswers++;
+			}
+
+			cout << "Epoch: " << e << ", sample: " << k << ", loss = " << sumLoss / (double)k <<
+				", accuracy = " << (double)nOfCorrectAnswers / (double)k << "\n";
+
+			if (k % 100 == 0) {
+				cout << cnn.save("models\\epoch" + to_string(e) + "samples" + to_string(k))<< "\n";
+			}
 		}
-		cout << endl;
+
+		outFile2.open("out2.csv", ios_base::app);
+		outFile2 << e << "," << sumLoss / (double)nOfSamples << "," <<
+			(double)nOfCorrectAnswers / (double)nOfSamples << "\n";
+		outFile2.close();
+
+		dataFile.close();
+
 	}
-	file.close();
+
+	int x;
+	cin >> x;
+
+	return 0;
 }
