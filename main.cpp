@@ -6,52 +6,85 @@
 using namespace std;
 
 int main() {
-	vector<string> labels = {
-		"T-shirt", "Trouser", "Pullover", "Dress", "Coat", "Sandal", "Shirt", "Sneaker", "Bag", "Ankle boot"
-	};
+	cout << "Enter test data file name:\n";
+	string fileName;
+	cin >> fileName;
 
-	CNN cnn;
-	cnn.load("model");
+	cout << "Enter n of train samples:\n";
+	int nOfTrainSamples;
+	cin >> nOfTrainSamples;
 
-	ifstream file("fashion-mnist_test.csv");
-	string density = "¶@ØÆMåBNÊßÔR#8Q&mÃ0À$GXZA5ñk2S%±3Fz¢yÝCJf1t7ªLc¿+?(r/¤²!*;\"^:,'.`";
-	reverse(density.begin(), density.end());
-	int r = 54;
-	for (int i = 0; i < r; i++) {
-		string s;
-		getline(file, s);
-	}
-	int label;
-	file >> label;
-	cout << "Class: " << labels[label] << "\n\n";
-	vector<vector<vector<double>>> image(1, vector<vector<double>>(28, vector<double>(28)));
-	for (int r = 0; r < 28; r++) {
-		for (int c = 0; c < 28; c++) {
-			int val;
-			file >> val;
-			image[0][r][c] = (double)val / 255.0;
-			int step = 255 / density.size();
-			if (val > step * density.size()) {
-				val = step * density.size();
-			}
-			int p = 0;
-			int index = 0;
-			for (int i = 0; i < density.size(); i++) {
-				p += step;
-				if (val <= p) {
-					index = i;
-					break;
-				}
-			}
-			cout << density[index] << density[index];
+	cout << "Enter n of test samples:\n";
+	int nOfTestSamples;
+	cin >> nOfTestSamples;
+
+	cout << "Enter step:\n";
+	int step;
+	cin >> step;
+
+
+	ofstream fileOut("output.csv");
+	fileOut << "epoch,train_samples,loss,accuracy\n";
+	fileOut.close();
+
+	for (int epoch = 1; epoch <= 2; epoch++) {
+		int trainSample = 0;
+		if (epoch > 1) {
+			trainSample = step;
 		}
-		cout << endl;
+		while (trainSample <= nOfTrainSamples) {
+
+			CNN cnn;
+			cnn.load("models\\epoch" + to_string(epoch) + "samples" + to_string(trainSample));
+
+			ifstream file(fileName);
+			if (!file.is_open()) {
+				return -1;
+			}
+
+			string s;
+			getline(file, s);
+
+
+			double loss = 0;
+			double nOfCorrectAnswers = 0;
+
+			for (int testSample = 1; testSample <= nOfTestSamples; testSample++) {
+
+				int label;
+				file >> label;
+
+				vector<vector<vector<double>>> image(1, vector<vector<double>>(28, vector<double>(28)));
+				for (int r = 0; r < 28; r++) {
+					for (int c = 0; c < 28; c++) {
+						int value;
+						file >> value;
+						image[0][r][c] = (double)value / 255.0;
+					}
+				}
+
+				double currLoss = cnn.getLoss(image, label);
+				loss += currLoss;
+				if (cnn.predict(image)[label] > 0.5) {
+					nOfCorrectAnswers++;
+				}
+
+				cout << "e = " << epoch << ", s = " << trainSample
+					<< ", test sample = " << testSample << ", loss = "
+					<< loss / (double)testSample << ", accuracy = "
+					<< (double)nOfCorrectAnswers / (double)testSample << "\n";
+			}
+
+			fileOut.open("output.csv", ios_base::app);
+			fileOut << epoch << "," << trainSample << "," << loss / (double)nOfTestSamples
+				<< "," << (double)nOfCorrectAnswers / (double)nOfTestSamples << "\n";
+			fileOut.close();
+
+
+			file.close();
+			trainSample += step;
+		}
 	}
-	cout << "\n";
-	vector<double> out = cnn.predict(image);
-	for (int i = 0; i < out.size(); i++) {
-		cout << labels[i] << ": " << out[i] << "\n";
-	}
-	cout << "\n\n\n";
-	file.close();
+
+	return 0;
 }
