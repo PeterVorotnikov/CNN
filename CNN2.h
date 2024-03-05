@@ -212,6 +212,8 @@ public:
 
 	void backPropagation();
 
+	void backPropagation2();
+
 	void updateWeights();
 
 public:

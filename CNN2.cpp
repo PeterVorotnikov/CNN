@@ -1152,6 +1152,53 @@ void CNN2::backPropagation() {
 
 }
 
+void CNN2::backPropagation2() {
+
+	double sumExponents = 0;
+
+	for (int i = 0; i < nOfClasses; i++) {
+
+		sumExponents += exp(outputInputs[i]);
+
+	}
+
+	for (int n1 = 0; n1 < nOfClasses; n1++) {
+
+		for (int n2 = 0; n2 < nOfClasses; n2++) {
+
+			if (n1 == n2) {
+
+				outputDiff2[n1][n2] = (exp(outputInputs[n1]) * sumExponents -
+					exp(outputInputs[2 * n1])) / pow(sumExponents, 2);
+
+			}
+
+			else {
+
+				outputDiff2[n1][n2] = -exp(outputInputs[n1] + outputInputs[n1]) /
+					pow(sumExponents, 2);
+
+			}
+
+		}
+
+	}
+
+	for (int prevNeuron = 0; prevNeuron < sizeOfLayers.back(); prevNeuron++) {
+
+		for (int currNeuron = 0; currNeuron < nOfClasses; currNeuron++) {
+
+			outputBiasesDiff2[currNeuron] = outputDiff2[currNeuron][currNeuron];
+
+			outputWeightsDiff2[prevNeuron][currNeuron] = outputDiff2[currNeuron][currNeuron] *
+				pow(fullLayersOutputs.back()[prevNeuron], 2);
+
+		}
+
+	}
+
+}
+
 
 void CNN2::updateWeights() {
 
