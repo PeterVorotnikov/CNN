@@ -21,15 +21,19 @@ int main() {
 
 	CNN2 cnn;
 	cnn.predict(image);
+	int i = 50, j = 7;
+	double h = 0.0001;
+	double f = cnn.getLoss(image, 0);
+	//cnn.outputWeights[i][j] += h;
+	cnn.outputBiases[j] += h;
+	double fhplus = cnn.getLoss(image, 0);
+	//cnn.outputWeights[i][j] -= 2 * h;
+	cnn.outputBiases[j] -= 2 * h;
+	double fhminus = cnn.getLoss(image, 0);
+	//cnn.outputWeights[i][j] += h;
+	cnn.outputBiases[j] += h;
 	cnn.backPropagation();
 	cnn.backPropagation2();
-	int i = 25, j = 5;
-	double h = 0.1;
-	double f = cnn.getLoss(image, 0);
-	cnn.outputWeights[i][j] += h;
-	double fhplus = cnn.getLoss(image, 0);
-	cnn.outputWeights[i][j] -= 2 * h;
-	double fhminus = cnn.getLoss(image, 0);
-	cnn.outputWeights[i][j] += h;
-	cout << cnn.outputWeightsDiff2[i][j] << "\t" << (fhplus - 2 * f + fhminus) / h / h;
+	//cout << cnn.outputWeightsDiff2[i][j] << "\t" << (fhplus - 2 * f + fhminus) / h / h;
+	cout << cnn.outputBiasesDiff2[j] << "\t" << (fhplus - 2 * f + fhminus) / h / h;
 }

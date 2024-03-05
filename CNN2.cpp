@@ -1169,7 +1169,7 @@ void CNN2::backPropagation2() {
 			if (n1 == n2) {
 
 				outputDiff2[n1][n2] = (exp(outputInputs[n1]) * sumExponents -
-					exp(outputInputs[2 * n1])) / pow(sumExponents, 2);
+					exp(2 * outputInputs[n1])) / pow(sumExponents, 2);
 
 			}
 
