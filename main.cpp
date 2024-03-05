@@ -1,7 +1,7 @@
 ﻿#include <iostream>
 #include <string>
 #include <algorithm>
-#include "CNN.h"
+#include "CNN2.h"
 
 using namespace std;
 
@@ -9,6 +9,7 @@ int main() {
 	cout << "Enter test data file name:\n";
 	string fileName;
 	cin >> fileName;
+	fileName = "fashion-mnist_test.csv";
 
 	cout << "Enter n of train samples:\n";
 	int nOfTrainSamples;
@@ -27,15 +28,15 @@ int main() {
 	fileOut << "epoch,train_samples,loss,accuracy\n";
 	fileOut.close();
 
-	for (int epoch = 1; epoch <= 2; epoch++) {
+	for (int epoch = 1; epoch <= 1; epoch++) {
 		int trainSample = 0;
 		if (epoch > 1) {
 			trainSample = step;
 		}
-		while (trainSample <= nOfTrainSamples) {
+		while (trainSample <= 1) {
 
-			CNN cnn;
-			cnn.load("models\\epoch" + to_string(epoch) + "samples" + to_string(trainSample));
+			CNN2 cnn;
+			cnn.load("model");
 
 			ifstream file(fileName);
 			if (!file.is_open()) {
