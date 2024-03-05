@@ -69,9 +69,13 @@ public:
 
 	vector<vector<vector<double>>> fullWeightsDiff;
 
+	vector<vector<vector<double>>> fullWeightsDiff2;
+
 	vector<vector<double>> fullBiases;
 
 	vector<vector<double>> fullBiasesDiff;
+
+	vector<vector<double>> fullBiasesDiff2;
 
 
 
@@ -84,7 +88,11 @@ public:
 
 	vector<vector<double>> outputWeightsDiff;
 
+	vector<vector<double>> outputWeightsDiff2;
+
 	vector<double> outputBiasesDiff;
+
+	vector<double> outputBiasesDiff2;
 
 
 
@@ -127,6 +135,8 @@ public:
 
 	vector<vector<double>> fullLayersDiff;
 
+	vector<vector<vector<double>>> fullLayersDiff2;
+
 
 
 	// Output layer
@@ -136,6 +146,8 @@ public:
 	vector<double> outputOutputs;
 
 	vector<double> outputDiff;
+
+	vector<vector<double>> outputDiff2;
 
 
 

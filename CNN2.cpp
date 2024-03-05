@@ -242,9 +242,13 @@ void CNN2::parametersInit() {
 
 	fullWeightsDiff.resize(nOfFullLayers);
 
+	fullWeightsDiff2.resize(nOfFullLayers);
+
 	fullBiases.resize(nOfFullLayers);
 
 	fullBiasesDiff.resize(nOfFullLayers);
+
+	fullBiasesDiff2.resize(nOfFullLayers);
 
 	for (int fullLayer = 0; fullLayer < nOfFullLayers; fullLayer++) {
 
@@ -268,15 +272,21 @@ void CNN2::parametersInit() {
 
 		fullWeightsDiff[fullLayer].resize(nOfPrevLayerOutputSignals);
 
+		fullWeightsDiff2[fullLayer].resize(nOfPrevLayerOutputSignals);
+
 		fullBiases[fullLayer].resize(sizeOfLayers[fullLayer]);
 
 		fullBiasesDiff[fullLayer].resize(sizeOfLayers[fullLayer]);
+
+		fullBiasesDiff2[fullLayer].resize(sizeOfLayers[fullLayer]);
 
 		for (int nOfOutput = 0; nOfOutput < nOfPrevLayerOutputSignals; nOfOutput++) {
 
 			fullWeights[fullLayer][nOfOutput].resize(sizeOfLayers[fullLayer]);
 
 			fullWeightsDiff[fullLayer][nOfOutput].resize(sizeOfLayers[fullLayer]);
+
+			fullWeightsDiff2[fullLayer][nOfOutput].resize(sizeOfLayers[fullLayer]);
 
 			for (int nOfInput = 0; nOfInput < sizeOfLayers[fullLayer]; nOfInput++) {
 
@@ -303,15 +313,21 @@ void CNN2::parametersInit() {
 
 	outputWeightsDiff.resize(sizeOfLayers.back());
 
+	outputWeightsDiff2.resize(sizeOfLayers.back());
+
 	outputBiases.resize(nOfClasses);
 
 	outputBiasesDiff.resize(nOfClasses);
+
+	outputBiasesDiff2.resize(nOfClasses);
 
 	for (int nOfOutput = 0; nOfOutput < sizeOfLayers.back(); nOfOutput++) {
 
 		outputWeights[nOfOutput].resize(nOfClasses);
 
 		outputWeightsDiff[nOfOutput].resize(nOfClasses);
+
+		outputWeightsDiff2[nOfOutput].resize(nOfClasses);
 
 		for (int nOfInput = 0; nOfInput < nOfClasses; nOfInput++) {
 
@@ -493,6 +509,8 @@ void CNN2::statesInit() {
 
 	fullLayersDiff.resize(nOfFullLayers);
 
+	fullLayersDiff2.resize(nOfFullLayers);
+
 	for (int fullLayer = 0; fullLayer < nOfFullLayers; fullLayer++) {
 
 		fullLayersInputs[fullLayer].resize(sizeOfLayers[fullLayer]);
@@ -500,6 +518,14 @@ void CNN2::statesInit() {
 		fullLayersOutputs[fullLayer].resize(sizeOfLayers[fullLayer]);
 
 		fullLayersDiff[fullLayer].resize(sizeOfLayers[fullLayer]);
+
+		fullLayersDiff2[fullLayer].resize(sizeOfLayers[fullLayer]);
+
+		for (int neuron = 0; neuron < sizeOfLayers[fullLayer]; neuron++) {
+
+			fullLayersDiff2[fullLayer][neuron].resize(sizeOfLayers[fullLayer]);
+
+		}
 
 	}
 
@@ -512,6 +538,14 @@ void CNN2::statesInit() {
 	outputOutputs.resize(nOfClasses);
 
 	outputDiff.resize(nOfClasses);
+
+	outputDiff2.resize(nOfClasses);
+
+	for (int i = 0; i < nOfClasses; i++) {
+
+		outputDiff2[i].resize(nOfClasses);
+
+	}
 
 
 
