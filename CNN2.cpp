@@ -70,6 +70,9 @@ double CNN2::layerActivationDiff(double x) {
 	return layerActivation(x) * (1 - layerActivation(x));
 
 }
+double CNN2::layerActivationDiff2(double x) {
+	return layerActivation(x) * (1 - layerActivation(x)) * (1 - 2 * layerActivation(x));
+}
 
 
 
@@ -1175,7 +1178,7 @@ void CNN2::backPropagation2() {
 
 			else {
 
-				outputDiff2[n1][n2] = -exp(outputInputs[n1] + outputInputs[n1]) /
+				outputDiff2[n1][n2] = -exp(outputInputs[n1] + outputInputs[n2]) /
 					pow(sumExponents, 2);
 
 			}
@@ -1192,6 +1195,115 @@ void CNN2::backPropagation2() {
 
 			outputWeightsDiff2[prevNeuron][currNeuron] = outputDiff2[currNeuron][currNeuron] *
 				pow(fullLayersOutputs.back()[prevNeuron], 2);
+
+		}
+
+	}
+
+
+	for (int fullLayer = nOfFullLayers - 1; fullLayer >= 0; fullLayer--) {
+
+		for (int currNeuron1 = 0; currNeuron1 < sizeOfLayers[fullLayer]; currNeuron1++) {
+
+			for (int currNeuron2 = 0; currNeuron2 < sizeOfLayers[fullLayer]; currNeuron2++) {
+
+				double value = 0;
+
+				if (fullLayer == nOfFullLayers - 1) {
+
+					for (int outputNeuron1 = 0; outputNeuron1 < nOfClasses; outputNeuron1++) {
+
+						for (int outputNeuron2 = 0; outputNeuron2 < nOfClasses; outputNeuron2++) {
+
+							value += outputDiff2[outputNeuron1][outputNeuron2] *
+								outputWeights[currNeuron1][outputNeuron1] *
+								outputWeights[currNeuron2][outputNeuron2];
+
+						}
+
+					}
+
+				}
+
+				else {
+
+					for (int nextNeuron1 = 0; nextNeuron1 < sizeOfLayers[fullLayer + 1]; nextNeuron1++) {
+
+						for (int nextNeuron2 = 0; nextNeuron2 < sizeOfLayers[fullLayer + 1]; nextNeuron2++) {
+
+							value += fullLayersDiff2[fullLayer + 1][nextNeuron1][nextNeuron2] *
+								fullWeights[fullLayer + 1][currNeuron1][nextNeuron1] *
+								fullWeights[fullLayer + 1][currNeuron2][nextNeuron2];
+
+						}
+
+					}
+
+				}
+
+				if (currNeuron1 == currNeuron2) {
+
+					fullLayersDiff2[fullLayer][currNeuron1][currNeuron2] =
+						fullLayersDiff[fullLayer][currNeuron1] /
+						layerActivationDiff(fullLayersInputs[fullLayer][currNeuron1]) *
+						layerActivationDiff2(fullLayersInputs[fullLayer][currNeuron1]) +
+						value *
+						pow(layerActivationDiff(fullLayersInputs[fullLayer][currNeuron1]), 2);
+
+				}
+
+
+				else {
+
+					fullLayersDiff2[fullLayer][currNeuron1][currNeuron2] =
+						value * layerActivationDiff(fullLayersInputs[fullLayer][currNeuron1]) *
+						layerActivationDiff(fullLayersInputs[fullLayer][currNeuron2]);
+
+				}
+
+			}
+
+		}
+
+		for (int currNeuron = 0; currNeuron < sizeOfLayers[fullLayer]; currNeuron++) {
+
+			fullBiasesDiff2[fullLayer][currNeuron] = fullLayersDiff2[fullLayer][currNeuron][currNeuron];
+
+			if (fullLayer > 0) {
+
+				for (int prevNeuron = 0; prevNeuron < sizeOfLayers[fullLayer - 1]; prevNeuron++) {
+
+					fullWeightsDiff2[fullLayer][prevNeuron][currNeuron] =
+						fullLayersDiff2[fullLayer][currNeuron][currNeuron] *
+						pow(fullLayersOutputs[fullLayer - 1][prevNeuron], 2);
+
+				}
+
+			}
+
+			else {
+
+				int prevNeuron = 0;
+
+				for (int map = 0; map < poolingLayersOutputs.back().size(); map++) {
+
+					for (int row = 0; row < poolingLayersOutputs.back()[map].size(); row++) {
+
+						for (int col = 0; col < poolingLayersOutputs.back()[map][row].size(); col++) {
+
+							fullWeightsDiff2[fullLayer][prevNeuron][currNeuron] =
+								fullLayersDiff2[fullLayer][currNeuron][currNeuron] *
+								pow(poolingLayersOutputs.back()[map][row][col], 2);
+
+							prevNeuron++;
+
+						}
+
+					}
+
+				}
+
+			}
 
 		}
 

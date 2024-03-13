@@ -169,6 +169,8 @@ public:
 
 	double layerActivationDiff(double x);
 
+	double layerActivationDiff2(double x);
+
 
 
 	vector<double> softmaxOutputs(vector<double> softmaxInputs);
