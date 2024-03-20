@@ -43,6 +43,8 @@ public:
 
 	double learningRate = 0.01;
 
+	double learningRate2 = 0.001;
+
 
 
 
@@ -217,6 +219,8 @@ public:
 	void backPropagation2();
 
 	void updateWeights();
+
+	void updateWeights2();
 
 public:
 

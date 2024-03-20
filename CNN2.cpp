@@ -1388,6 +1388,24 @@ void CNN2::updateWeights() {
 
 }
 
+void CNN2::updateWeights2() {
+
+	// Output layer
+
+	for (int outNeuron = 0; outNeuron < nOfClasses; outNeuron++) {
+
+		outputBiases[outNeuron] -= learningRate2 * outputBiasesDiff[outNeuron] / 
+			outputBiasesDiff2[outNeuron];
+
+		//for(int prevNeuron = 0; prevNeuron < fullLayersOutputs.back().)
+
+	}
+
+}
+
+
+
+
 double CNN2::fit(vector<vector<vector<double>>> image, int target) {
 
 	if (target < 0 || target >= nOfClasses) {

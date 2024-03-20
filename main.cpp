@@ -10,7 +10,9 @@ int main() {
 	cout.precision(20);
 	ifstream file("fashion-mnist_train.csv");
 	string s;
-	getline(file, s);
+	for (int i = 0; i < 155; i++) {
+		getline(file, s);
+	}
 	vector<vector<vector<double>>> image(1, vector<vector<double>>(28, vector<double>(28)));
 	int label;
 	file >> label;
@@ -24,11 +26,11 @@ int main() {
 	file.close();
 
 	CNN2 cnn;
-	//cnn.load("model");
+	cnn.load("epoch1samples0");
 	cnn.predict(image);
 	int i = 49, j = 6, k = 1;
 	double h = 0.05;
-	for (int i = 0; i < 1; i+=1) {
+	for (int i = 0; i < 780; i+=1) {
 		for (int j = 0; j < 60; j+=1) {
 			double f = cnn.getLoss(image, label);
 			cnn.fullWeights[k][i][j] += h;
