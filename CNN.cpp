@@ -1304,7 +1304,7 @@ void CNN::updateWeights(bool useAdaptive) {
 
 }
 
-double CNN::fit(vector<vector<vector<double>>> image, int target, bool useAdaptive = false) {
+double CNN::fit(vector<vector<vector<double>>> image, int target, bool useAdaptive) {
 
 	if (target < 0 || target >= nOfClasses) {
 
