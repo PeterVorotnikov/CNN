@@ -1188,7 +1188,7 @@ void CNN::backPropagation() {
 }
 
 
-void CNN::updateWeights() {
+void CNN::updateWeights(bool useAdaptive) {
 
 	// Conv layers
 
@@ -1196,7 +1196,14 @@ void CNN::updateWeights() {
 
 		for (int filter = 0; filter < convWeights[layer].size(); filter++) {
 
-			convBiases[layer][filter] -= learningRate * convBiasesDiff[layer][filter];
+			convBiasesV[layer][filter] = beta1 * convBiasesV[layer][filter] +
+				(1 - beta1) * convBiasesDiff[layer][filter];
+
+			convBiasesG[layer][filter] = beta2 * convBiasesG[layer][filter] +
+				(1 - beta2) * pow(convBiasesDiff[layer][filter], 2);
+
+			convBiases[layer][filter] -= learningRate * convBiasesV[layer][filter] / 
+				(1.0 + (double)useAdaptive * (-1.0 + sqrt(convBiasesG[layer][filter] + epsilon)));
 
 			for (int map = 0; map < convWeights[layer][filter].size(); map++) {
 
@@ -1204,8 +1211,14 @@ void CNN::updateWeights() {
 
 					for (int col = 0; col < convWeights[layer][filter][map][row].size(); col++) {
 
-						convWeights[layer][filter][map][row][col] -= learningRate *
-							convWeightsDiff[layer][filter][map][row][col];
+						convWeightsV[layer][filter][map][row][col] = beta1 * convWeightsV[layer][filter][map][row][col] + 
+							(1 - beta1) * convWeightsDiff[layer][filter][map][row][col];
+
+						convWeightsG[layer][filter][map][row][col] = beta2 * convWeightsG[layer][filter][map][row][col] +
+							(1 - beta2) * pow(convWeightsDiff[layer][filter][map][row][col], 2);
+
+						convWeights[layer][filter][map][row][col] -= learningRate * convWeightsV[layer][filter][map][row][col] / 
+							(1.0 + (double)useAdaptive * (-1.0 + sqrt(convWeightsG[layer][filter][map][row][col] + epsilon)));
 
 					}
 
@@ -1225,8 +1238,14 @@ void CNN::updateWeights() {
 
 			for (int curr = 0; curr < fullWeights[layer][prev].size(); curr++) {
 
-				fullWeights[layer][prev][curr] -= learningRate *
-					fullWeightsDiff[layer][prev][curr];
+				fullWeightsV[layer][prev][curr] = beta1 * fullWeightsV[layer][prev][curr] +
+					(1 - beta1) * fullWeightsDiff[layer][prev][curr];
+
+				fullWeightsG[layer][prev][curr] = beta2 * fullWeightsG[layer][prev][curr] +
+					(1 - beta2) * pow(fullWeightsDiff[layer][prev][curr], 2);
+
+				fullWeights[layer][prev][curr] -= learningRate * fullWeightsV[layer][prev][curr] / 
+					(1.0 + (double)useAdaptive * (-1.0 + sqrt(fullWeightsG[layer][prev][curr] + epsilon)));
 
 			}
 
@@ -1238,7 +1257,14 @@ void CNN::updateWeights() {
 
 		for (int curr = 0; curr < fullBiases[layer].size(); curr++) {
 
-			fullBiases[layer][curr] -= learningRate * fullBiasesDiff[layer][curr];
+			fullBiasesV[layer][curr] = beta1 * fullBiasesV[layer][curr] +
+				(1 - beta1) * fullBiasesDiff[layer][curr];
+
+			fullBiasesG[layer][curr] = beta2 * fullBiasesG[layer][curr] +
+				(1 - beta2) * pow(fullBiasesDiff[layer][curr], 2);
+
+			fullBiases[layer][curr] -= learningRate * fullBiasesV[layer][curr] /
+				(1.0 + (double)useAdaptive * (-1.0 + sqrt(fullBiasesG[layer][curr] + epsilon)));
 
 		}
 
@@ -1250,7 +1276,14 @@ void CNN::updateWeights() {
 
 		for (int output = 0; output < outputWeights[prev].size(); output++) {
 
-			outputWeights[prev][output] -= learningRate * outputWeightsDiff[prev][output];
+			outputWeightsV[prev][output] = beta1 * outputWeightsV[prev][output] +
+				(1 - beta1) * outputWeightsDiff[prev][output];
+
+			outputWeightsG[prev][output] = beta2 * outputWeightsG[prev][output] +
+				(1 - beta2) * pow(outputWeightsDiff[prev][output], 2);
+
+			outputWeights[prev][output] -= learningRate * outputWeightsV[prev][output] /
+				(1.0 - (double)useAdaptive * (-1.0 * sqrt(outputWeightsG[prev][output] + epsilon)));
 
 		}
 
@@ -1258,13 +1291,20 @@ void CNN::updateWeights() {
 
 	for (int output = 0; output < outputBiases.size(); output++) {
 
-		outputBiases[output] -= learningRate * outputBiasesDiff[output];
+		outputBiasesV[output] = beta1 * outputBiasesV[output] +
+			(1 - beta1) * outputBiasesDiff[output];
+
+		outputBiasesG[output] = beta2 * outputBiasesG[output] +
+			(1 - beta2) * pow(outputBiasesDiff[output], 2);
+
+		outputBiases[output] -= learningRate * outputBiasesV[output] / 
+			(1.0 + (double)useAdaptive * (-1.0 * sqrt(outputBiasesG[output] + epsilon)));
 
 	}
 
 }
 
-double CNN::fit(vector<vector<vector<double>>> image, int target) {
+double CNN::fit(vector<vector<vector<double>>> image, int target, bool useAdaptive = false) {
 
 	if (target < 0 || target >= nOfClasses) {
 
@@ -1310,7 +1350,7 @@ double CNN::fit(vector<vector<vector<double>>> image, int target) {
 
 	backPropagation();
 
-	updateWeights();
+	updateWeights(useAdaptive);
 
 	return lossValue;
 

@@ -45,8 +45,6 @@ public:
 
 	double epsilon = pow(10, -8);
 
-	double alpha = 3 * pow(10, -2);
-
 	double beta1 = 0.9;
 
 	double beta2 = 0.99;
@@ -232,13 +230,13 @@ public:
 
 	void backPropagation();
 
-	void updateWeights();
+	void updateWeights(bool useAdaptive);
 
 public:
 
 	vector<double> predict(vector<vector<vector<double>>> image);
 
-	double fit(vector<vector<vector<double>>> image, int target);
+	double fit(vector<vector<vector<double>>> image, int target, bool useAdaptive = false);
 
 	double getLoss(vector<vector<vector<double>>> image, int target);
 
