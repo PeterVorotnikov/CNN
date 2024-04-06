@@ -170,6 +170,15 @@ void CNN::parametersInit() {
 
 	convBiasesDiff.resize(nOfConvLayers);
 
+
+	convWeightsV.resize(nOfConvLayers);
+
+	convWeightsG.resize(nOfConvLayers);
+
+	convBiasesV.resize(nOfConvLayers);
+
+	convBiasesG.resize(nOfConvLayers);
+
 	for (int convLayer = 0; convLayer < nOfConvLayers; convLayer++) {
 
 		convWeights[convLayer].resize(nOfFilters[convLayer]);
@@ -180,13 +189,26 @@ void CNN::parametersInit() {
 
 		convBiasesDiff[convLayer].resize(nOfFilters[convLayer]);
 
+
+		convWeightsV[convLayer].resize(nOfFilters[convLayer]);
+
+		convWeightsG[convLayer].resize(nOfFilters[convLayer]);
+
+		convBiasesV[convLayer].resize(nOfFilters[convLayer]);
+
+		convBiasesG[convLayer].resize(nOfFilters[convLayer]);
+
 		for (int filter = 0; filter < nOfFilters[convLayer]; filter++) {
 
 			if (convLayer == 0) {
 
-				convWeights[convLayer][filter].resize(1);
+				convWeights[convLayer][filter].resize(nOfImageChannels);
 
-				convWeightsDiff[convLayer][filter].resize(1);
+				convWeightsDiff[convLayer][filter].resize(nOfImageChannels);
+
+				convWeightsV[convLayer][filter].resize(nOfImageChannels);
+
+				convWeightsG[convLayer][filter].resize(nOfImageChannels);
 
 			}
 
@@ -196,19 +218,31 @@ void CNN::parametersInit() {
 
 				convWeightsDiff[convLayer][filter].resize(nOfFilters[convLayer - 1]);
 
+				convWeightsV[convLayer][filter].resize(nOfFilters[convLayer - 1]);
+
+				convWeightsG[convLayer][filter].resize(nOfFilters[convLayer - 1]);
+
 			}
 
-			for (int k = 0; k < ((convLayer == 0) ? 1 : nOfFilters[convLayer - 1]); k++) {
+			for (int k = 0; k < ((convLayer == 0) ? nOfImageChannels : nOfFilters[convLayer - 1]); k++) {
 
 				convWeights[convLayer][filter][k].resize(sizeOfKernels[convLayer]);
 
 				convWeightsDiff[convLayer][filter][k].resize(sizeOfKernels[convLayer]);
+
+				convWeightsV[convLayer][filter][k].resize(sizeOfKernels[convLayer]);
+
+				convWeightsG[convLayer][filter][k].resize(sizeOfKernels[convLayer]);
 
 				for (int i = 0; i < sizeOfKernels[convLayer]; i++) {
 
 					convWeights[convLayer][filter][k][i].resize(sizeOfKernels[convLayer]);
 
 					convWeightsDiff[convLayer][filter][k][i].resize(sizeOfKernels[convLayer]);
+
+					convWeightsV[convLayer][filter][k][i].resize(sizeOfKernels[convLayer]);
+
+					convWeightsG[convLayer][filter][k][i].resize(sizeOfKernels[convLayer]);
 
 					for (int j = 0; j < sizeOfKernels[convLayer]; j++) {
 
@@ -246,6 +280,15 @@ void CNN::parametersInit() {
 
 	fullBiasesDiff.resize(nOfFullLayers);
 
+
+	fullWeightsV.resize(nOfFullLayers);
+
+	fullWeightsG.resize(nOfFullLayers);
+
+	fullBiasesV.resize(nOfFullLayers);
+
+	fullBiasesG.resize(nOfFullLayers);
+
 	for (int fullLayer = 0; fullLayer < nOfFullLayers; fullLayer++) {
 
 		int nOfPrevLayerOutputSignals;
@@ -272,11 +315,24 @@ void CNN::parametersInit() {
 
 		fullBiasesDiff[fullLayer].resize(sizeOfLayers[fullLayer]);
 
+
+		fullWeightsV[fullLayer].resize(nOfPrevLayerOutputSignals);
+
+		fullWeightsG[fullLayer].resize(nOfPrevLayerOutputSignals);
+
+		fullBiasesV[fullLayer].resize(sizeOfLayers[fullLayer]);
+
+		fullBiasesG[fullLayer].resize(sizeOfLayers[fullLayer]);
+
 		for (int nOfOutput = 0; nOfOutput < nOfPrevLayerOutputSignals; nOfOutput++) {
 
 			fullWeights[fullLayer][nOfOutput].resize(sizeOfLayers[fullLayer]);
 
 			fullWeightsDiff[fullLayer][nOfOutput].resize(sizeOfLayers[fullLayer]);
+
+			fullWeightsV[fullLayer][nOfOutput].resize(sizeOfLayers[fullLayer]);
+
+			fullWeightsG[fullLayer][nOfOutput].resize(sizeOfLayers[fullLayer]);
 
 			for (int nOfInput = 0; nOfInput < sizeOfLayers[fullLayer]; nOfInput++) {
 
@@ -307,11 +363,24 @@ void CNN::parametersInit() {
 
 	outputBiasesDiff.resize(nOfClasses);
 
+
+	outputWeightsV.resize(sizeOfLayers.back());
+
+	outputWeightsG.resize(sizeOfLayers.back());
+
+	outputBiasesV.resize(nOfClasses);
+
+	outputBiasesG.resize(nOfClasses);
+
 	for (int nOfOutput = 0; nOfOutput < sizeOfLayers.back(); nOfOutput++) {
 
 		outputWeights[nOfOutput].resize(nOfClasses);
 
 		outputWeightsDiff[nOfOutput].resize(nOfClasses);
+
+		outputWeightsV[nOfOutput].resize(nOfClasses);
+
+		outputWeightsG[nOfOutput].resize(nOfClasses);
 
 		for (int nOfInput = 0; nOfInput < nOfClasses; nOfInput++) {
 

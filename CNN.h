@@ -43,6 +43,14 @@ public:
 
 	double learningRate = 0.01;
 
+	double epsilon = pow(10, -8);
+
+	double alpha = 3 * pow(10, -2);
+
+	double beta1 = 0.9;
+
+	double beta2 = 0.99;
+
 	
 
 
@@ -57,9 +65,17 @@ public:
 
 	vector<vector<vector<vector<vector<double>>>>> convWeightsDiff;
 
+	vector<vector<vector<vector<vector<double>>>>> convWeightsV;
+
+	vector<vector<vector<vector<vector<double>>>>> convWeightsG;
+
 	vector<vector<double>> convBiases;
 
 	vector<vector<double>> convBiasesDiff;
+
+	vector<vector<double>> convBiasesV;
+
+	vector<vector<double>> convBiasesG;
 
 
 
@@ -69,9 +85,17 @@ public:
 
 	vector<vector<vector<double>>> fullWeightsDiff;
 
+	vector<vector<vector<double>>> fullWeightsV;
+
+	vector<vector<vector<double>>> fullWeightsG;
+
 	vector<vector<double>> fullBiases;
 
 	vector<vector<double>> fullBiasesDiff;
+
+	vector<vector<double>> fullBiasesV;
+
+	vector<vector<double>> fullBiasesG;
 
 
 
@@ -85,6 +109,14 @@ public:
 	vector<vector<double>> outputWeightsDiff;
 
 	vector<double> outputBiasesDiff;
+
+	vector<vector<double>> outputWeightsV;
+
+	vector<double> outputBiasesV;
+
+	vector<vector<double>> outputWeightsG;
+
+	vector<double> outputBiasesG;
 
 
 
